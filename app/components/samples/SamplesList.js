@@ -9,7 +9,7 @@ class SamplesList extends React.Component {
       <Jumbotron style={{ padding: '10px' }}>
         <h3 style={{ textAlign: 'center' }}>Samples List</h3>
         { samples.map((url, key) => 
-          <SampleItem url={url} key={key} appState={this.props.appState} setAppState={this.props.setAppState} addChannel={this.props.addChannel} />
+          <SampleItem url={url} key={key} appState={this.props.appState} setAppState={this.props.setAppState} addChannel={this.props.addChannel} stopAllSources={this.props.stopAllSources} />
           )
         }
       </Jumbotron>

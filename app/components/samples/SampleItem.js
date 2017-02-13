@@ -8,7 +8,6 @@ class SampleItem extends React.Component {
 
     this.loadAndPlay = this.loadAndPlay.bind(this);
     this.play = this.play.bind(this);
-    // this.stopAllSources = this.stopAllSources.bind(this);
   }
 
   loadAndPlay(url) {
@@ -26,7 +25,7 @@ class SampleItem extends React.Component {
 
   play(bufferList) {
     let context = this.props.appState.context;
-    let sourceList = this.stopAllSources();
+    let sourceList = this.props.stopAllSources();
 
     let source = context.createBufferSource();
     source.buffer = bufferList[0];
@@ -40,15 +39,6 @@ class SampleItem extends React.Component {
 
     source.start(time);
   }  
-
-  // Make sure to call setState after to update sourceList with returned value.
-  stopAllSources() {
-    let sourceList = this.props.appState.sourceList;
-    for (let i = 0; i < sourceList.length; ++i)
-      sourceList[i].stop(0);
-    sourceList = [];
-    return sourceList;
-  }
 
   render() {
     let splittedUrl = this.props.url.split('/');
