@@ -12,12 +12,21 @@ class AppMain extends React.Component {
     let master = context.createGain();
     master.connect(context.destination);
 
+    let recorder = new WebAudioRecorder(master, {
+      workerDir: "../lib/"     // must end with slash
+    });
+
+    recorder.onComplete = (rec, blob) => {
+      download(blob, 'mixdown.wav');
+    };
+
     this.state = {
       context: context,
       sourceList: [],
       channels: [],
       master: master,
       showSamplesList: false,
+      recorder: recorder,
     };
 
     this.addChannel = this.addChannel.bind(this);

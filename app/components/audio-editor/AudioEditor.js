@@ -23,6 +23,7 @@ class AudioEditor extends React.Component {
     this.loadAndPlay = this.loadAndPlay.bind(this);
     this.play = this.play.bind(this);
     this.stop = this.stop.bind(this);
+    this.record = this.record.bind(this);
     this.onChangeLoop = this.onChangeLoop.bind(this);
   }
 
@@ -170,6 +171,16 @@ class AudioEditor extends React.Component {
     });
   }
 
+  record() {
+    let bars = this.state.bars;
+    let bpm = this.state.bpm;
+    let recorder = this.props.appState.recorder;
+    let duration = (( 240 * bars ) / bpm) + 0.1;
+    recorder.setOptions({ timeLimit: duration });
+    recorder.startRecording();
+    this.loadAndPlay();
+  }
+
   onChangeLoop(e) {
     this.setState({
       loop: e.target.checked,
@@ -195,7 +206,7 @@ class AudioEditor extends React.Component {
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={this.props.appState.channels} master={this.props.appState.master} />
-        <ControlBar play={this.loadAndPlay} stop={this.stop} showSamplesList={this.props.showSamplesList} />
+        <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} showSamplesList={this.props.showSamplesList} />
         { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
       </Jumbotron>
     );
