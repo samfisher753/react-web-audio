@@ -44,8 +44,9 @@ class SampleItem extends React.Component {
     let splittedUrl = this.props.url.split('/');
     let name = splittedUrl[splittedUrl.length - 1];
     return (
-      <Panel style={{ fontSize: '12px', margin: '0px' }}>
-        <Button style={{ padding: '3px' }} onClick={this.loadAndPlay.bind(null, this.props.url)} >Play</Button> -> {name} <Button style={{ padding: '3px' }} onClick={this.props.addChannel.bind(null, this.props.url)}>Add</Button>
+      <Panel style={{ fontSize: '12px', margin: '0px', marginBottom: '7px', display: 'block' }}>
+        <Button style={{ padding: '3px', width: '50px' }} onClick={this.loadAndPlay.bind(null, this.props.url)} >Play</Button> -> {name} 
+        <Button style={{ padding: '3px', float: 'right', width: '50px' }} onClick={this.props.addChannel.bind(null, this.props.url)}>Add</Button>
       </Panel>
     );
   }

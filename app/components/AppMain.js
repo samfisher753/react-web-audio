@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Row, Col, Jumbotron, Panel } from 'react-bootstrap';
+import { Grid, Row, Col, Jumbotron, Panel, Modal, Button } from 'react-bootstrap';
 import SamplesList from './samples/SamplesList';
 import AudioEditor from './audio-editor/AudioEditor';
 
@@ -17,11 +17,14 @@ class AppMain extends React.Component {
       sourceList: [],
       channels: [],
       master: master,
-    }
+      showSamplesList: false,
+    };
 
     this.addChannel = this.addChannel.bind(this);
     this.setState = this.setState.bind(this);
     this.stopAllSources = this.stopAllSources.bind(this);
+    this.showSamplesList = this.showSamplesList.bind(this);
+    this.hideSamplesList = this.hideSamplesList.bind(this);
   }
 
   addChannel(url) {
@@ -51,19 +54,52 @@ class AppMain extends React.Component {
     return sourceList;
   }
 
+  showSamplesList() {
+    this.setState({
+      showSamplesList: true,
+    });
+  }
+
+  hideSamplesList() {
+    this.setState({
+      showSamplesList: false,
+    });
+  }
+
   render() {
     return (
+      <div>
       <Grid>
+      { /*}
         <Row>
           <Col md={3}>
             <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} stopAllSources={this.stopAllSources} />
-            <button onClick={() => console.log(this.state)}>Show state</button>
+            { /* <button onClick={() => console.log(this.state)}>Show state</button> 
           </Col>
           <Col md={9}>
-            <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} />
+            
+          </Col>
+        </Row> */ }
+        <Row>
+          <Col>
+            <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} showSamplesList={this.showSamplesList} />
           </Col>
         </Row>
       </Grid>
+
+      <Modal show={this.state.showSamplesList} onHide={this.hideSamplesList}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select the samples you want or add new ones to the list</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} stopAllSources={this.stopAllSources} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={this.hideSamplesList}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+      
+      </div>
     );
   }
 }

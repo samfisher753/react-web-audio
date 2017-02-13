@@ -9,8 +9,8 @@ class AudioEditor extends React.Component {
   constructor(props){
     super();
     this.state = {
-      bars: 2,
-      bpm: 90,
+      bars: 4,
+      bpm: 85,
       tc: 16,
       loop: false,
     }
@@ -178,9 +178,9 @@ class AudioEditor extends React.Component {
 
   render() {
     return(
-      <Jumbotron>
-        <h3>Audio Editor</h3>
-        <h5>
+      <Jumbotron style={{ padding: '10px 30px', paddingBottom: '30px' }}>
+        <h2>Audio Editor</h2>
+        <h5 style={{ marginTop: '20px' }} >
           Bars: <input type='number' min='1' defaultValue={this.state.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
           BPM: <input type='number' min='0' defaultValue={this.state.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
           Time Correct: 
@@ -191,12 +191,12 @@ class AudioEditor extends React.Component {
               <option value="32">32</option>
               <option value="64">64</option> 
             </select>
-          Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} />
+          { /* Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} /> */ }
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={this.props.appState.channels} master={this.props.appState.master} />
-        <ControlBar play={this.loadAndPlay} stop={this.stop} />
-        <button onClick={() => console.log(this.state)} >Show AudioEditor state</button>
+        <ControlBar play={this.loadAndPlay} stop={this.stop} showSamplesList={this.props.showSamplesList} />
+        { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
       </Jumbotron>
     );
   }
