@@ -1,4 +1,5 @@
 import React from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class BeatsGridItem extends React.Component {
   constructor(props) {
@@ -30,9 +31,16 @@ class BeatsGridItem extends React.Component {
   }
 
   render() {
+    const urlarray = this.props.url.split('/');
+    const filename = urlarray[urlarray.length-1].split('.');
+    const name = (<Tooltip id='tooltip'><strong>{filename[0]}</strong></Tooltip>);
     return(
       <div>
-        {this.props.id} {this.buildRow(this.props.bars)}
+        <OverlayTrigger placement='left' overlay={name}>
+          <b>{this.props.id} - </b>
+        </OverlayTrigger>
+        &nbsp;
+        {this.buildRow(this.props.bars)}
       </div>
     );
   }
