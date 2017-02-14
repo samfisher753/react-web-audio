@@ -13,6 +13,7 @@ class AudioEditor extends React.Component {
       bpm: 85,
       tc: 16,
       loop: false,
+      filetype: 'wav',
     }
 
     this.changeBars = this.changeBars.bind(this);
@@ -25,6 +26,7 @@ class AudioEditor extends React.Component {
     this.stop = this.stop.bind(this);
     this.record = this.record.bind(this);
     this.onChangeLoop = this.onChangeLoop.bind(this);
+    this.changeFileType = this.changeFileType.bind(this);
   }
 
   changeBars(e) {
@@ -187,6 +189,21 @@ class AudioEditor extends React.Component {
     });
   }
 
+  changeFileType(type) {
+    let recorder = this.props.appState.recorder;
+    if (!recorder.isRecording()) {
+      recorder.setEncoding(type);
+
+      recorder.onComplete = (rec, blob) => {
+        download(blob, 'mixdown.' + type);
+      };
+
+      this.setState({
+        filetype: type,
+      });
+    }
+  }
+
   render() {
     return(
       <Jumbotron style={{ padding: '10px 30px', paddingBottom: '30px' }}>
@@ -206,7 +223,7 @@ class AudioEditor extends React.Component {
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={this.props.appState.channels} master={this.props.appState.master} />
-        <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} showSamplesList={this.props.showSamplesList} />
+        <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
         { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
       </Jumbotron>
     );

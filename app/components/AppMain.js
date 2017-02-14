@@ -13,7 +13,15 @@ class AppMain extends React.Component {
     master.connect(context.destination);
 
     let recorder = new WebAudioRecorder(master, {
-      workerDir: "../lib/"     // must end with slash
+      workerDir: '../lib/',     // must end with slash
+      options: {
+        ogg: {
+          quality: 1,
+        },
+        mp3: {
+          bitRate: 320,
+        },
+      },
     });
 
     recorder.onComplete = (rec, blob) => {
@@ -79,22 +87,14 @@ class AppMain extends React.Component {
     return (
       <div>
       <Grid>
-      { /*}
-        <Row>
-          <Col md={3}>
-            <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} stopAllSources={this.stopAllSources} />
-            { /* <button onClick={() => console.log(this.state)}>Show state</button> 
-          </Col>
-          <Col md={9}>
-            
-          </Col>
-        </Row> */ }
         <Row>
           <Col>
             <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} showSamplesList={this.showSamplesList} />
           </Col>
         </Row>
       </Grid>
+
+      { /* <button onClick={() => console.log(this.state)}>Show state</button> */ }
 
       <Modal show={this.state.showSamplesList} onHide={this.hideSamplesList}>
         <Modal.Header closeButton>
