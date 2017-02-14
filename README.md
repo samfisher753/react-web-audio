@@ -2,6 +2,8 @@ react-web-audio
 
 A basic audio sequencer made in React using Web Audio API with recording feature. It lets you export your mix in three different formats: wav(16 bits), mp3(320kbps) and ogg.
 
+It uses WebAudioRecorder.js(https://github.com/higuma/web-audio-recorder-js) and download.js(http://danml.com/download.html) to save the mix.
+
 To use it:
 - Download or clone the project.
 - Navigate to the root folder.
