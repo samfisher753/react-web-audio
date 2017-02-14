@@ -178,8 +178,14 @@ class AudioEditor extends React.Component {
     let bpm = this.state.bpm;
     let recorder = this.props.appState.recorder;
     let duration = (( 240 * bars ) / bpm) + 0.1;
+    let type = this.state.filetype;
+
     recorder.setOptions({ timeLimit: duration });
+    recorder.onComplete = (rec, blob) => {
+      download(blob, 'mixdown.' + type);
+    };
     recorder.startRecording();
+    
     this.loadAndPlay();
   }
 
@@ -193,10 +199,6 @@ class AudioEditor extends React.Component {
     let recorder = this.props.appState.recorder;
     if (!recorder.isRecording()) {
       recorder.setEncoding(type);
-
-      recorder.onComplete = (rec, blob) => {
-        download(blob, 'mixdown.' + type);
-      };
 
       this.setState({
         filetype: type,

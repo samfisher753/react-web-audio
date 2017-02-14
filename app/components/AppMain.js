@@ -24,10 +24,6 @@ class AppMain extends React.Component {
       },
     });
 
-    recorder.onComplete = (rec, blob) => {
-      download(blob, 'mixdown.wav');
-    };
-
     this.state = {
       context: context,
       sourceList: [],
