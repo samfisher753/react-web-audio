@@ -31,9 +31,11 @@ class AppMain extends React.Component {
       master: master,
       showSamplesList: false,
       recorder: recorder,
+      channelNum: 0,
     };
 
     this.addChannel = this.addChannel.bind(this);
+    this.deleteChannel = this.deleteChannel.bind(this);
     this.setState = this.setState.bind(this);
     this.stopAllSources = this.stopAllSources.bind(this);
     this.showSamplesList = this.showSamplesList.bind(this);
@@ -46,7 +48,7 @@ class AppMain extends React.Component {
     let channels = [
       ...this.state.channels,
       {
-        id: this.state.channels.length,
+        id: this.state.channelNum,
         url: url,
         beats: [],
         gainNode: gainNode,
@@ -54,7 +56,22 @@ class AppMain extends React.Component {
     ];
 
     this.setState({
-      channels: channels
+      channels: channels,
+      channelNum: ++this.state.channelNum,
+    });
+  }
+
+  deleteChannel(id) {
+    let channels = this.state.channels;
+    for (let i=0; i<channels.length; ++i){
+      if (channels[i].id === id){
+        channels.splice(i, 1);
+        break;
+      }
+    }
+
+    this.setState({
+      channels: channels,
     });
   }
 
@@ -85,7 +102,7 @@ class AppMain extends React.Component {
       <Grid>
         <Row>
           <Col>
-            <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} showSamplesList={this.showSamplesList} />
+            <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} showSamplesList={this.showSamplesList} deleteChannel={this.deleteChannel} />
           </Col>
         </Row>
       </Grid>

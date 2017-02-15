@@ -37,7 +37,7 @@ class BeatsGridItem extends React.Component {
     return(
       <div>
         <OverlayTrigger placement='left' overlay={name}>
-          <b>{this.props.id} - </b>
+          <div style={{ fontWeight: 'bold', width: '100px', display: 'inline' }}><span>{this.props.id} - </span></div>
         </OverlayTrigger>
         &nbsp;
         {this.buildRow(this.props.bars)}

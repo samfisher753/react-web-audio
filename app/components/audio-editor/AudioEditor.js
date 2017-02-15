@@ -224,7 +224,7 @@ class AudioEditor extends React.Component {
           { /* Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} /> */ }
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
-        <Mixer channels={this.props.appState.channels} master={this.props.appState.master} />
+        <Mixer channels={this.props.appState.channels} master={this.props.appState.master} deleteChannel={this.props.deleteChannel} />
         <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
         { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
       </Jumbotron>
