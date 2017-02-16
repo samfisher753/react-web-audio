@@ -9,6 +9,8 @@ class AudioEditor extends React.Component {
   constructor(props){
     super();
     this.state = {
+      playing: false,
+      recording: false,
       bars: 4,
       bpm: 85,
       tc: 16,
@@ -27,6 +29,7 @@ class AudioEditor extends React.Component {
     this.record = this.record.bind(this);
     this.onChangeLoop = this.onChangeLoop.bind(this);
     this.changeFileType = this.changeFileType.bind(this);
+    this.endPlayHandler = this.endPlayHandler.bind(this);
   }
 
   changeBars(e) {
@@ -105,6 +108,10 @@ class AudioEditor extends React.Component {
   }
 
   loadAndPlay() {
+    this.setState({
+      playing: true,
+    });
+  
     let sourceList = this.props.stopAllSources();
     this.props.setAppState({
       sourceList: sourceList,
@@ -129,7 +136,7 @@ class AudioEditor extends React.Component {
     let channels = this.props.appState.channels;
     let master = this.props.appState.master;
 
-    let initTime = context.currentTime + 0.1;
+    let initTime = context.currentTime;
     let bars = this.state.bars;
     let bpm = this.state.bpm;
     let tc = this.state.tc;
@@ -145,7 +152,6 @@ class AudioEditor extends React.Component {
       for (let j=0; j<beats.length; ++j) {
         let source = context.createBufferSource();
         source.buffer = bufferList[i];
-        source.loop = this.state.loop;
         source.connect(gainNode);
         gainNode.connect(master);
         let time = initTime + beats[j] * noteTime;
@@ -164,12 +170,42 @@ class AudioEditor extends React.Component {
       channels: channels,
       sourceList: sourceList,
     });
+
+    let duration = 240 / bpm * bars * 1000;
+    let timeout = setTimeout(() => {
+      this.endPlayHandler();
+    }, duration);
+
+    this.setState({
+      timeout: timeout,
+    });
+    
+  }
+
+  endPlayHandler(){
+    if (this.state.loop && !this.state.recording){
+      this.loadAndPlay();
+    }
+    else {
+      this.setState({
+        playing: false,
+      });
+    }
   }
 
   stop() {
+    if (this.state.playing) {
+      clearTimeout(this.state.timeout);
+      this.setState({
+        playing: false,
+      });
+    }
     let sourceList = this.props.stopAllSources();
     this.props.setAppState({
       sourceList: sourceList,
+    });
+    this.setState({
+      playing: false,
     });
   }
 
@@ -177,15 +213,22 @@ class AudioEditor extends React.Component {
     let bars = this.state.bars;
     let bpm = this.state.bpm;
     let recorder = this.props.appState.recorder;
-    let duration = (( 240 * bars ) / bpm) + 0.1;
+    let duration = (( 240 * bars ) / bpm);
     let type = this.state.filetype;
 
     recorder.setOptions({ timeLimit: duration });
     recorder.onComplete = (rec, blob) => {
       download(blob, 'mixdown.' + type);
+      this.setState({
+        recording: false,
+      });
     };
-    recorder.startRecording();
     
+    this.setState({
+      recording: true,
+    });
+    
+    recorder.startRecording();
     this.loadAndPlay();
   }
 
@@ -221,11 +264,11 @@ class AudioEditor extends React.Component {
               <option value="32">32</option>
               <option value="64">64</option> 
             </select>
-          { /* Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} /> */ }
+          Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} />
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={this.props.appState.channels} master={this.props.appState.master} deleteChannel={this.props.deleteChannel} />
-        <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
+        <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} playing={this.state.playing} recording={this.state.recording} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
         { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
       </Jumbotron>
     );

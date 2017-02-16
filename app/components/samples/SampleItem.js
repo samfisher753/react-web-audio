@@ -46,7 +46,8 @@ class SampleItem extends React.Component {
     return (
       <Panel style={{ fontSize: '12px', margin: '0px', marginBottom: '7px', display: 'block' }}>
         <Button style={{ padding: '3px', width: '50px' }} onClick={this.loadAndPlay.bind(null, this.props.url)} >Play</Button> -> {name} 
-        <Button style={{ padding: '3px', float: 'right', width: '50px' }} onClick={this.props.addChannel.bind(null, this.props.url)}>Add</Button>
+        <Button style={{ padding: '3px', float: 'right', width: '62px' }} onClick={this.props.deleteSample.bind(null, this.props.url)}>Delete</Button>
+        <Button style={{ padding: '3px', float: 'right', width: '50px', marginRight: '5px' }} onClick={this.props.addChannel.bind(null, this.props.url)}>Add</Button>
       </Panel>
     );
   }

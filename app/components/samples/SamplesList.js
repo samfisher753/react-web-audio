@@ -13,12 +13,23 @@ class SamplesList extends React.Component {
     };
 
     this.addSample = this.addSample.bind(this);
+    this.deleteSample = this.deleteSample.bind(this);
   }
 
   addSample() {
     let samples = this.state.samples;
     samples.push(this.refs.url.value);
     
+    this.setState({
+      samples: samples,
+    });
+  }
+
+  deleteSample(url) {
+    let samples = this.state.samples;
+    let i = samples.indexOf(url);
+    samples.splice(i, 1);
+        
     this.setState({
       samples: samples,
     });
@@ -33,7 +44,15 @@ class SamplesList extends React.Component {
           <Button onClick={this.addSample} style={{ width: '70px', float: 'right', marginRight: '5px' }} >Add</Button>
         </div>
         { this.state.samples.map((url, key) => 
-          <SampleItem url={url} key={key} appState={this.props.appState} setAppState={this.props.setAppState} addChannel={this.props.addChannel} stopAllSources={this.props.stopAllSources} />
+          <SampleItem
+            url={url}
+            key={key}
+            appState={this.props.appState}
+            setAppState={this.props.setAppState}
+            addChannel={this.props.addChannel}
+            deleteSample={this.deleteSample}
+            stopAllSources={this.props.stopAllSources}
+          />
           )
         }
       </Jumbotron>
