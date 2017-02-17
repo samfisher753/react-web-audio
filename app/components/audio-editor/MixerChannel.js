@@ -21,10 +21,12 @@ class MixerChannel extends React.Component {
 
   render() {
     let text = 'Channel ' + this.props.id;
-    let float = 'left';
-    if (this.props.id === -1) float = 'right';
+    let defaultStyle = { width: '90px', height: '230px', textAlign: 'center', borderStyle: 'solid', borderWidth: '1px', padding: '5px', float: 'left', marginRight: '5px', marginBottom: '4px' };
+    let masterStyle = { width: '90px', height: '230px', textAlign: 'center', borderStyle: 'solid', borderWidth: '1px', padding: '5px', float: 'right', marginRight: '70px', marginBottom: '4px' };
+    let style = defaultStyle;
+    if (this.props.id === -1) style = masterStyle;
     return (
-      <div style={{ width: '90px', height: '230px', textAlign: 'center', borderStyle: 'solid', borderWidth: '1px', padding: '5px', float: float, marginRight: '5px', marginBottom: '4px' }}>
+      <div style={style}>
         <div style={{ marginTop: '5px', marginBottom: '10px' }}>
           { this.props.id !== -1 ? 
             text : 'Master'

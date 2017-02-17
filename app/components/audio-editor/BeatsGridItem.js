@@ -35,13 +35,16 @@ class BeatsGridItem extends React.Component {
     const filename = urlarray[urlarray.length-1].split('.');
     const name = (<Tooltip id='tooltip'><strong>{filename[0]}</strong></Tooltip>);
     return(
-      <div>
-        <OverlayTrigger placement='left' overlay={name}>
-          <div style={{ fontWeight: 'bold', width: '100px', display: 'inline' }}><span>{this.props.id} - </span></div>
-        </OverlayTrigger>
-        &nbsp;
-        {this.buildRow(this.props.bars)}
-      </div>
+      <tr>
+        <td style={{ width: '40px', textAlign: 'right', paddingRight: '6px' }}>
+          <OverlayTrigger placement='left' overlay={name}>
+            <div style={{ fontWeight: 'bold', width: '100px', display: 'inline' }}><span>{this.props.id}  - </span></div>
+          </OverlayTrigger>
+        </td>
+        <td>
+          {this.buildRow(this.props.bars)}
+        </td>
+      </tr>
     );
   }
 }
