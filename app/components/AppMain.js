@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Row, Col, Jumbotron, Panel, Modal, Button } from 'react-bootstrap';
 import SamplesList from './samples/SamplesList';
 import AudioEditor from './audio-editor/AudioEditor';
+import MyBufferLoader from '../web-audio-api/my-buffer-loader-es6';
 
 class AppMain extends React.Component {
   constructor() {
@@ -32,10 +33,12 @@ class AppMain extends React.Component {
       showSamplesList: false,
       recorder: recorder,
       channelNum: 0,
+      loading: false,
     };
 
     this.addChannel = this.addChannel.bind(this);
     this.deleteChannel = this.deleteChannel.bind(this);
+    this.bufferLoaded = this.bufferLoaded.bind(this);
     this.setState = this.setState.bind(this);
     this.stopAllSources = this.stopAllSources.bind(this);
     this.showSamplesList = this.showSamplesList.bind(this);
@@ -45,20 +48,26 @@ class AppMain extends React.Component {
   addChannel(url) {
     let context = this.state.context;
     let gainNode = context.createGain();
+    let channelId = this.state.channelNum;
     let channels = [
       ...this.state.channels,
       {
-        id: this.state.channelNum,
+        id: channelId,
         url: url,
         beats: [],
         gainNode: gainNode,
+        sourceList: [],
       }
     ];
 
     this.setState({
       channels: channels,
       channelNum: ++this.state.channelNum,
+      loading: true,
     });
+
+    let myBufferLoader = new MyBufferLoader(context, url, channelId, this.bufferLoaded);
+    myBufferLoader.load();
   }
 
   deleteChannel(id) {
@@ -75,11 +84,25 @@ class AppMain extends React.Component {
     });
   }
 
+  bufferLoaded(channelId, buffer){
+    let channels = this.state.channels;
+    for (let i=0; i<channels.length; ++i)
+      if (channels[i].id === channelId)
+        channels[i].buffer = buffer;
+      
+    this.setState({
+      channels: channels,
+      loading: false,
+    });
+  }
+
   // Make sure to call setState after to update sourceList with returned value.
   stopAllSources() {
     let sourceList = this.state.sourceList;
-    for (let i = 0; i < sourceList.length; ++i)
+    for (let i = 0; i < sourceList.length; ++i) {
       sourceList[i].stop(0);
+      sourceList[i].disconnect();
+    }
     sourceList = [];
     return sourceList;
   }

@@ -23,7 +23,6 @@ class AudioEditor extends React.Component {
     this.changeTC = this.changeTC.bind(this);
     this.addBeat = this.addBeat.bind(this);
     this.removeBeat = this.removeBeat.bind(this);
-    this.loadAndPlay = this.loadAndPlay.bind(this);
     this.play = this.play.bind(this);
     this.stop = this.stop.bind(this);
     this.record = this.record.bind(this);
@@ -76,14 +75,8 @@ class AudioEditor extends React.Component {
     let channels = this.props.appState.channels;
     let beats = channels[ch].beats;
     beats.push(id);
+    channels[ch].beats = beats;
 
-    channels[ch] = {
-      id: channels[ch].id,
-      url: channels[ch].url,
-      beats: beats,
-      gainNode: channels[ch].gainNode,
-    };
-    
     this.props.setAppState({
       channels: channels,
     });
@@ -94,97 +87,78 @@ class AudioEditor extends React.Component {
     let beats = channels[ch].beats;
     let index = beats.indexOf(id);
     beats.splice(index, 1);
-
-    channels[ch] = {
-      id: channels[ch].id,
-      url: channels[ch].url,
-      beats: beats,
-      gainNode: channels[ch].gainNode,
-    };
+    channels[ch].beats = beats;
 
     this.props.setAppState({
       channels: channels,
     });
   }
 
-  loadAndPlay() {
-    this.setState({
-      playing: true,
-    });
-  
-    let sourceList = this.props.stopAllSources();
-    this.props.setAppState({
-      sourceList: sourceList,
-    });
+  play() {
+    let appState = this.props.appState;
 
-    let channels = this.props.appState.channels;
-    let urlList = [];
-    for (let i=0; i<channels.length; ++i)
-      urlList.push(channels[i].url);
+    if (!appState.loading) {
+      this.setState({
+        playing: true,
+      });
     
-    let bufferLoader = new BufferLoader(
-      this.props.appState.context,
-      urlList,
-      this.play,
-    );
+      let sourceList = this.props.stopAllSources();
+      this.props.setAppState({
+        sourceList: sourceList,
+      });
 
-    bufferLoader.load();
-  }
+      let context = appState.context;
+      let channels = appState.channels;
+      let master = appState.master;
 
-  play(bufferList) {
-    let context = this.props.appState.context;
-    let channels = this.props.appState.channels;
-    let master = this.props.appState.master;
+      let initTime = context.currentTime;
+      let bars = this.state.bars;
+      let bpm = this.state.bpm;
+      let tc = this.state.tc;
+      let noteTime = (60 / bpm) / (tc / 4);
 
-    let initTime = context.currentTime;
-    let bars = this.state.bars;
-    let bpm = this.state.bpm;
-    let tc = this.state.tc;
-    let noteTime = (60 / bpm) / (tc / 4);
-    
-    let sourceList = [];
+      for (let i=0; i<channels.length; ++i) {
+        let buffer = channels[i].buffer;
+        let beats = channels[i].beats;
+        let gainNode = channels[i].gainNode;
+        let chSourceList = [];
 
-    for (let i=0; i<channels.length; ++i) {
-      let beats = channels[i].beats;
-      let gainNode = channels[i].gainNode;
-      let chSourceList = [];
+        for (let j=0; j<beats.length; ++j) {
+          let source = context.createBufferSource();
+          source.buffer = buffer;
+          source.connect(gainNode);
+          gainNode.connect(master);
+          let time = initTime + beats[j] * noteTime;
+          chSourceList.push(source);
+          source.start(time);
+        }
 
-      for (let j=0; j<beats.length; ++j) {
-        let source = context.createBufferSource();
-        source.buffer = bufferList[i];
-        source.connect(gainNode);
-        gainNode.connect(master);
-        let time = initTime + beats[j] * noteTime;
-        chSourceList.push(source);
-        source.start(time);
+        channels[i] = Object.assign({}, channels[i], { sourceList: chSourceList });
+        sourceList = [
+          ...sourceList,
+          ...chSourceList,
+        ];
       }
 
-      channels[i] = Object.assign({}, channels[i], { sourceList: chSourceList });
-      sourceList = [
-        ...sourceList,
-        ...chSourceList,
-      ];
+      this.props.setAppState({
+        channels: channels,
+        sourceList: sourceList,
+      });
+
+      let duration = 240 / bpm * bars * 1000;
+      let timeout = setTimeout(() => {
+        this.endPlayHandler();
+      }, duration);
+
+      this.setState({
+        timeout: timeout,
+      });
     }
-
-    this.props.setAppState({
-      channels: channels,
-      sourceList: sourceList,
-    });
-
-    let duration = 240 / bpm * bars * 1000;
-    let timeout = setTimeout(() => {
-      this.endPlayHandler();
-    }, duration);
-
-    this.setState({
-      timeout: timeout,
-    });
-    
   }
 
   endPlayHandler(){
     if (this.state.loop && !this.state.recording){
-      this.loadAndPlay();
+      this.play();
     }
     else {
       this.setState({
@@ -210,26 +184,28 @@ class AudioEditor extends React.Component {
   }
 
   record() {
-    let bars = this.state.bars;
-    let bpm = this.state.bpm;
-    let recorder = this.props.appState.recorder;
-    let duration = (( 240 * bars ) / bpm);
-    let type = this.state.filetype;
+    if (!this.props.appState.loading) {
+      let bars = this.state.bars;
+      let bpm = this.state.bpm;
+      let recorder = this.props.appState.recorder;
+      let duration = (( 240 * bars ) / bpm);
+      let type = this.state.filetype;
 
-    recorder.setOptions({ timeLimit: duration });
-    recorder.onComplete = (rec, blob) => {
-      download(blob, 'mixdown.' + type);
+      recorder.setOptions({ timeLimit: duration });
+      recorder.onComplete = (rec, blob) => {
+        download(blob, 'mixdown.' + type);
+        this.setState({
+          recording: false,
+        });
+      };
+      
       this.setState({
-        recording: false,
+        recording: true,
       });
-    };
-    
-    this.setState({
-      recording: true,
-    });
-    
-    recorder.startRecording();
-    this.loadAndPlay();
+      
+      recorder.startRecording();
+      this.play();
+    }
   }
 
   onChangeLoop(e) {
@@ -268,7 +244,7 @@ class AudioEditor extends React.Component {
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={this.props.appState.channels} master={this.props.appState.master} deleteChannel={this.props.deleteChannel} />
-        <ControlBar play={this.loadAndPlay} stop={this.stop} record={this.record} playing={this.state.playing} recording={this.state.recording} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
+        <ControlBar play={this.play} stop={this.stop} record={this.record} playing={this.state.playing} recording={this.state.recording} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
         { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
       </Jumbotron>
     );

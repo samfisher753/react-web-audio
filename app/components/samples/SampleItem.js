@@ -30,7 +30,7 @@ class SampleItem extends React.Component {
     let source = context.createBufferSource();
     source.buffer = bufferList[0];
     source.connect(context.destination);
-    let time = context.currentTime + 0.1;
+    let time = context.currentTime;
     sourceList.push(source);
 
     this.props.setAppState({
