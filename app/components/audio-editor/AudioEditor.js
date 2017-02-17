@@ -3,7 +3,6 @@ import { Jumbotron } from 'react-bootstrap';
 import BeatsGrid from './BeatsGrid';
 import Mixer from './Mixer';
 import ControlBar from './ControlBar';
-import BufferLoader from '../../web-audio-api/buffer-loader-es6';
 
 class AudioEditor extends React.Component {
   constructor(props){

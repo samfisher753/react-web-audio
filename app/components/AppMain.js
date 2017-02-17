@@ -34,6 +34,7 @@ class AppMain extends React.Component {
       recorder: recorder,
       channelNum: 0,
       loading: false,
+      sampleSource: null,
     };
 
     this.addChannel = this.addChannel.bind(this);

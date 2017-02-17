@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Panel, Button } from 'react-bootstrap';
-import BufferLoader from '../../web-audio-api/buffer-loader-es6';
+import MyBufferLoader from '../../web-audio-api/my-buffer-loader-es6';
 
 class SampleItem extends React.Component {
   constructor(props){
@@ -14,30 +14,35 @@ class SampleItem extends React.Component {
     let context = this.props.appState.context;
 
     // Load sample.
-    let bufferLoader = new BufferLoader(
+    let bufferLoader = new MyBufferLoader(
       context,
-      [ this.props.url ],
+      this.props.url,
+      -1,
       this.play
     );
     
     bufferLoader.load();
   }
 
-  play(bufferList) {
+  play(channelId, buffer) {
     let context = this.props.appState.context;
-    let sourceList = this.props.stopAllSources();
+    let sampleSource = this.props.appState.sampleSource;
+    
+    if (sampleSource !== null){
+      sampleSource.stop(0);
+      sampleSource.disconnect();
+    }
 
-    let source = context.createBufferSource();
-    source.buffer = bufferList[0];
-    source.connect(context.destination);
+    sampleSource = context.createBufferSource();
+    sampleSource.buffer = buffer;
+    sampleSource.connect(context.destination);
     let time = context.currentTime;
-    sourceList.push(source);
 
     this.props.setAppState({
-      sourceList: sourceList,
+      sampleSource: sampleSource,
     });
 
-    source.start(time);
+    sampleSource.start(time);
   }  
 
   render() {
