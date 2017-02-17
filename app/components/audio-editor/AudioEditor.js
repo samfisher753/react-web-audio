@@ -14,6 +14,8 @@ class AudioEditor extends React.Component {
       bpm: 85,
       tc: 16,
       loop: false,
+      loopTimes: 0, // 0 infinite
+      loopCount: 0,
       filetype: 'wav',
     }
 
@@ -26,6 +28,7 @@ class AudioEditor extends React.Component {
     this.stop = this.stop.bind(this);
     this.record = this.record.bind(this);
     this.onChangeLoop = this.onChangeLoop.bind(this);
+    this.changeLoopTimes = this.changeLoopTimes.bind(this);
     this.changeFileType = this.changeFileType.bind(this);
     this.endPlayHandler = this.endPlayHandler.bind(this);
   }
@@ -156,8 +159,35 @@ class AudioEditor extends React.Component {
   }
 
   endPlayHandler(){
-    if (this.state.loop && !this.state.recording){
-      this.play();
+    if (this.state.loop){
+      // If finite loop
+      if (this.state.loopTimes !== 0) {
+        // If remaining times
+        if (this.state.loopCount < this.state.loopTimes) {
+          this.setState({
+            loopCount: ++this.state.loopCount,
+          });
+          this.play();
+        }
+        // If not remaining times
+        else {
+          this.setState({
+            playing: false,
+            loopCount: 0,
+          });
+        }
+      }
+      // If infinite loop
+      else {
+        // If recording
+        if (this.state.recording){
+          this.setState({
+            playing: false,
+          });
+        }
+        // If not recording
+        else this.play();
+      }
     }
     else {
       this.setState({
@@ -183,11 +213,12 @@ class AudioEditor extends React.Component {
   }
 
   record() {
-    if (!this.props.appState.loading) {
+    if (!this.state.recording && !this.props.appState.loading) {
       let bars = this.state.bars;
       let bpm = this.state.bpm;
       let recorder = this.props.appState.recorder;
       let duration = (( 240 * bars ) / bpm);
+      if (this.state.loop && this.state.loopTimes !== 0) duration = (( 240 * bars ) / bpm) * (this.state.loopTimes + 1);
       let type = this.state.filetype;
 
       recorder.setOptions({ timeLimit: duration });
@@ -208,8 +239,23 @@ class AudioEditor extends React.Component {
   }
 
   onChangeLoop(e) {
+    if (!e.target.checked){
+      this.setState({
+        loop: e.target.checked,
+        loopTimes: 0,
+        loopCount: 0,
+      });
+    }
+    else {
+      this.setState({
+        loop: e.target.checked,
+      });
+    }
+  }
+
+  changeLoopTimes(e) {
     this.setState({
-      loop: e.target.checked,
+      loopTimes: parseInt(e.target.value),
     });
   }
 
@@ -239,7 +285,8 @@ class AudioEditor extends React.Component {
               <option value="32">32</option>
               <option value="64">64</option> 
             </select>
-          Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} />
+          Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} style={{ marginRight: '10px' }} />
+          Times: <input type='number' min='0' value={this.state.loopTimes} onChange={this.changeLoopTimes} disabled={!this.state.loop} style={{ width: '50px', textAlign: 'center' }} /> <small>(0 infinite)</small>
         </h5>
         <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={this.props.appState.channels} master={this.props.appState.master} deleteChannel={this.props.deleteChannel} />
