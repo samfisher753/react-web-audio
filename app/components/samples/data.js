@@ -48,7 +48,6 @@ let samples = [
   'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-11.wav',
   'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-12.wav',
   'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-13.wav',
-  'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-16.wav',
   'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-17.wav',
   'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-18.wav',
 
