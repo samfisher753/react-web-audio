@@ -1,36 +1,31 @@
 import React from 'react';
 import { Jumbotron } from 'react-bootstrap';
 import SampleItem from './SampleItem';
-import samples from './data.js';
 import { Button } from 'react-bootstrap';
 
 class SamplesList extends React.Component {
   constructor(props) {
     super();
 
-    this.state = {
-      samples: samples,
-    };
-
     this.addSample = this.addSample.bind(this);
     this.deleteSample = this.deleteSample.bind(this);
   }
 
   addSample() {
-    let samples = this.state.samples;
+    let samples = this.props.appState.samples;
     samples.push(this.refs.url.value);
     
-    this.setState({
+    this.props.setAppState({
       samples: samples,
     });
   }
 
   deleteSample(url) {
-    let samples = this.state.samples;
+    let samples = this.props.appState.samples;
     let i = samples.indexOf(url);
     samples.splice(i, 1);
         
-    this.setState({
+    this.props.setAppState({
       samples: samples,
     });
   }
@@ -43,7 +38,7 @@ class SamplesList extends React.Component {
           <b>Url:</b> <input ref='url' type='text'style={{ width: '430px', marginTop: '3px', marginRight: '10px', marginBottom: '20px' }}/>
           <Button onClick={this.addSample} style={{ width: '70px', float: 'right', marginRight: '5px' }} >Add</Button>
         </div>
-        { this.state.samples.map((url, key) => 
+        { this.props.appState.samples.map((url, key) => 
           <SampleItem
             url={url}
             key={key}

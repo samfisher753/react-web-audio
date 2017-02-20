@@ -7,17 +7,6 @@ import ControlBar from './ControlBar';
 class AudioEditor extends React.Component {
   constructor(props){
     super();
-    this.state = {
-      playing: false,
-      recording: false,
-      bars: 4,
-      bpm: 85,
-      tc: 16,
-      loop: false,
-      loopTimes: 0, // 0 infinite
-      loopCount: 0,
-      filetype: 'wav',
-    }
 
     this.changeBars = this.changeBars.bind(this);
     this.changeBPM = this.changeBPM.bind(this);
@@ -34,12 +23,12 @@ class AudioEditor extends React.Component {
   }
 
   changeBars(e) {
-    let oldBars = this.state.bars;
+    let oldBars = this.props.appState.bars;
     let newBars = parseInt(e.target.value);
     let channels = this.props.appState.channels;
 
     if (newBars < oldBars) {
-      let maxBeats = newBars * this.state.tc;
+      let maxBeats = newBars * this.props.appState.tc;
       for (let i=0; i<channels.length; ++i) {
         let beats = channels[i].beats;
         for (let j=0; j<beats.length; ++j) {
@@ -49,14 +38,14 @@ class AudioEditor extends React.Component {
       }
     }
 
-    this.setState({
+    this.props.setAppState({
       channels: channels,
       bars: newBars,
     });
   }
 
   changeBPM(e) {
-    this.setState({
+    this.props.setAppState({
       bpm: parseInt(e.target.value),
     });
   }
@@ -67,7 +56,7 @@ class AudioEditor extends React.Component {
     for (let i=0; i<channels.length; ++i)
       channels[i].beats = [];
 
-    this.setState({
+    this.props.setAppState({
       channels: channels,
       tc: parseInt(e.target.value),
     });
@@ -100,12 +89,9 @@ class AudioEditor extends React.Component {
     let appState = this.props.appState;
 
     if (!appState.loading) {
-      this.setState({
-        playing: true,
-      });
-    
       let sourceList = this.props.stopAllSources();
       this.props.setAppState({
+        playing: true,
         sourceList: sourceList,
       });
 
@@ -114,9 +100,9 @@ class AudioEditor extends React.Component {
       let master = appState.master;
 
       let initTime = context.currentTime;
-      let bars = this.state.bars;
-      let bpm = this.state.bpm;
-      let tc = this.state.tc;
+      let bars = appState.bars;
+      let bpm = appState.bpm;
+      let tc = appState.tc;
       let noteTime = (60 / bpm) / (tc / 4);
 
       for (let i=0; i<channels.length; ++i) {
@@ -142,36 +128,34 @@ class AudioEditor extends React.Component {
         ];
       }
 
-      this.props.setAppState({
-        channels: channels,
-        sourceList: sourceList,
-      });
-
       let duration = 240 / bpm * bars * 1000;
       let timeout = setTimeout(() => {
         this.endPlayHandler();
       }, duration);
 
-      this.setState({
+      this.props.setAppState({
+        channels: channels,
+        sourceList: sourceList,
         timeout: timeout,
       });
     }
   }
 
   endPlayHandler(){
-    if (this.state.loop){
+    let appState = this.props.appState;
+    if (appState.loop){
       // If finite loop
-      if (this.state.loopTimes !== 0) {
+      if (appState.loopTimes !== 0) {
         // If remaining times
-        if (this.state.loopCount < this.state.loopTimes) {
-          this.setState({
-            loopCount: ++this.state.loopCount,
+        if (appState.loopCount < appState.loopTimes) {
+          this.props.setAppState({
+            loopCount: ++appState.loopCount,
           });
           this.play();
         }
         // If not remaining times
         else {
-          this.setState({
+          this.props.setAppState({
             playing: false,
             loopCount: 0,
           });
@@ -180,8 +164,8 @@ class AudioEditor extends React.Component {
       // If infinite loop
       else {
         // If recording
-        if (this.state.recording){
-          this.setState({
+        if (appState.recording){
+          this.props.setAppState({
             playing: false,
           });
         }
@@ -190,46 +174,45 @@ class AudioEditor extends React.Component {
       }
     }
     else {
-      this.setState({
+      this.props.setAppState({
         playing: false,
       });
     }
   }
 
   stop() {
-    if (this.state.playing) {
-      clearTimeout(this.state.timeout);
-      this.setState({
+    if (this.props.appState.playing) {
+      clearTimeout(this.props.appState.timeout);
+      this.props.setAppState({
         playing: false,
       });
     }
     let sourceList = this.props.stopAllSources();
     this.props.setAppState({
       sourceList: sourceList,
-    });
-    this.setState({
       playing: false,
     });
   }
 
   record() {
-    if (!this.state.recording && !this.props.appState.loading) {
-      let bars = this.state.bars;
-      let bpm = this.state.bpm;
-      let recorder = this.props.appState.recorder;
+    let appState = this.props.appState;
+    if (!appState.recording && !appState.loading) {
+      let bars = appState.bars;
+      let bpm = appState.bpm;
+      let recorder = appState.recorder;
       let duration = (( 240 * bars ) / bpm);
-      if (this.state.loop && this.state.loopTimes !== 0) duration = (( 240 * bars ) / bpm) * (this.state.loopTimes + 1);
-      let type = this.state.filetype;
+      if (appState.loop && appState.loopTimes !== 0) duration = (( 240 * bars ) / bpm) * (appState.loopTimes + 1);
+      let type = appState.filetype;
 
       recorder.setOptions({ timeLimit: duration });
       recorder.onComplete = (rec, blob) => {
         download(blob, 'mixdown.' + type);
-        this.setState({
+        this.props.setAppState({
           recording: false,
         });
       };
       
-      this.setState({
+      this.props.setAppState({
         recording: true,
       });
       
@@ -240,21 +223,21 @@ class AudioEditor extends React.Component {
 
   onChangeLoop(e) {
     if (!e.target.checked){
-      this.setState({
+      this.props.setAppState({
         loop: e.target.checked,
         loopTimes: 0,
         loopCount: 0,
       });
     }
     else {
-      this.setState({
+      this.props.setAppState({
         loop: e.target.checked,
       });
     }
   }
 
   changeLoopTimes(e) {
-    this.setState({
+    this.props.setAppState({
       loopTimes: parseInt(e.target.value),
     });
   }
@@ -264,34 +247,34 @@ class AudioEditor extends React.Component {
     if (!recorder.isRecording()) {
       recorder.setEncoding(type);
 
-      this.setState({
+      this.props.setAppState({
         filetype: type,
       });
     }
   }
 
   render() {
+    let appState = this.props.appState;
     return(
       <Jumbotron style={{ padding: '10px 30px', paddingBottom: '30px' }}>
         <h2>Audio Editor</h2>
         <h5 style={{ marginTop: '20px' }} >
-          Bars: <input type='number' min='1' defaultValue={this.state.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
-          BPM: <input type='number' min='0' defaultValue={this.state.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
+          Bars: <input type='number' min='1' defaultValue={appState.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
+          BPM: <input type='number' min='0' defaultValue={appState.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
           Time Correct: 
-            <select defaultValue={this.state.tc} onChange={this.changeTC} ref="select" style={{ width: '50px', marginLeft: '5px', marginRight: '10px' }}>
+            <select defaultValue={appState.tc} onChange={this.changeTC} ref="select" style={{ width: '50px', marginLeft: '5px', marginRight: '10px' }}>
               <option value="4">4</option>
               <option value="8">8</option>
               <option value="16">16</option>
               <option value="32">32</option>
               <option value="64">64</option> 
             </select>
-          Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={this.state.loop} style={{ marginRight: '10px' }} />
-          Times: <input type='number' min='0' value={this.state.loopTimes} onChange={this.changeLoopTimes} disabled={!this.state.loop} style={{ width: '50px', textAlign: 'center' }} /> <small>(0 infinite)</small>
+          Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={appState.loop} style={{ marginRight: '10px' }} />
+          Times: <input type='number' min='0' value={appState.loopTimes} onChange={this.changeLoopTimes} disabled={!appState.loop} style={{ width: '50px', textAlign: 'center' }} /> <small>(0 infinite)</small>
         </h5>
-        <BeatsGrid bars={this.state.bars} tc={this.state.tc} channels={this.props.appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
-        <Mixer channels={this.props.appState.channels} master={this.props.appState.master} deleteChannel={this.props.deleteChannel} />
-        <ControlBar play={this.play} stop={this.stop} record={this.record} playing={this.state.playing} recording={this.state.recording} filetype={this.state.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
-        { /* <button onClick={() => console.log(this.state)} >Show AudioEditor state</button> */ }
+        <BeatsGrid bars={appState.bars} tc={appState.tc} channels={appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
+        <Mixer channels={appState.channels} master={appState.master} deleteChannel={this.props.deleteChannel} />
+        <ControlBar play={this.play} stop={this.stop} record={this.record} playing={appState.playing} recording={appState.recording} filetype={appState.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
       </Jumbotron>
     );
   }
