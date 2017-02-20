@@ -11,5 +11,3 @@ To use it:
 - Run "npm start".
 
 Now you can see the app at http://localhost:8089
-
-You'll need to install the "Allow-Control-Allow-Origin: *" extension for Google Chrome.
