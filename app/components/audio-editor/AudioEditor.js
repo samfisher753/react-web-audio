@@ -181,12 +181,7 @@ class AudioEditor extends React.Component {
   }
 
   stop() {
-    if (this.props.appState.playing) {
-      clearTimeout(this.props.appState.timeout);
-      this.props.setAppState({
-        playing: false,
-      });
-    }
+    if (this.props.appState.playing) clearTimeout(this.props.appState.timeout);
     let sourceList = this.props.stopAllSources();
     this.props.setAppState({
       sourceList: sourceList,
@@ -259,10 +254,10 @@ class AudioEditor extends React.Component {
       <Jumbotron style={{ padding: '10px 30px', paddingBottom: '30px' }}>
         <h2>Audio Editor</h2>
         <h5 style={{ marginTop: '20px' }} >
-          Bars: <input type='number' min='1' defaultValue={appState.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
-          BPM: <input type='number' min='0' defaultValue={appState.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
+          Bars: <input type='number' min='1' value={appState.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
+          BPM: <input type='number' min='0' value={appState.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
           Time Correct: 
-            <select defaultValue={appState.tc} onChange={this.changeTC} ref="select" style={{ width: '50px', marginLeft: '5px', marginRight: '10px' }}>
+            <select value={appState.tc} onChange={this.changeTC} ref="select" style={{ width: '50px', marginLeft: '5px', marginRight: '10px' }}>
               <option value="4">4</option>
               <option value="8">8</option>
               <option value="16">16</option>
@@ -273,7 +268,7 @@ class AudioEditor extends React.Component {
           Times: <input type='number' min='0' value={appState.loopTimes} onChange={this.changeLoopTimes} disabled={!appState.loop} style={{ width: '50px', textAlign: 'center' }} /> <small>(0 infinite)</small>
         </h5>
         <BeatsGrid bars={appState.bars} tc={appState.tc} channels={appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
-        <Mixer channels={appState.channels} master={appState.master} deleteChannel={this.props.deleteChannel} />
+        <Mixer channels={appState.channels} master={appState.master} deleteChannel={this.props.deleteChannel} setAppState={this.props.setAppState} />
         <ControlBar play={this.play} stop={this.stop} record={this.record} playing={appState.playing} recording={appState.recording} filetype={appState.filetype} changeFileType={this.changeFileType} showSamplesList={this.props.showSamplesList} />
       </Jumbotron>
     );

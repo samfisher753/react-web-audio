@@ -13,6 +13,7 @@ class MixerChannel extends React.Component {
     //console.log(e.target.value);
     let gainNode = this.props.gainNode;
     gainNode.gain.value = parseFloat(e.target.value);
+    this.props.updateState(this.props.id);
   }
 
   deleteChannel() {
@@ -34,9 +35,9 @@ class MixerChannel extends React.Component {
         </div>
         <center>
           { this.props.id !== -1 ?
-              <input onChange={this.onChange} type='range' min="0.000" max="1.000" step="0.001" defaultValue="1.000" style={{ width: '30px', WebkitAppearance: 'slider-vertical' }} />
+              <input onChange={this.onChange} type='range' min="0.000" max="1.000" step="0.001" value={this.props.gainNode.gain.value} style={{ width: '30px', WebkitAppearance: 'slider-vertical' }} />
             :
-              <input onChange={this.onChange} type='range' min="0.000" max="1.000" step="0.001" defaultValue="1.000" style={{ marginTop: '10px', width: '30px', height: '165px', WebkitAppearance: 'slider-vertical' }} />
+              <input onChange={this.onChange} type='range' min="0.000" max="1.000" step="0.001" value={this.props.gainNode.gain.value} style={{ marginTop: '10px', width: '30px', height: '165px', WebkitAppearance: 'slider-vertical' }} />
           }
         </center>
         { this.props.id !== -1 && <center><Button style={{ marginTop: '13px' }} onClick={this.deleteChannel}>Delete</Button></center> }

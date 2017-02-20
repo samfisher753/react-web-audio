@@ -61,15 +61,44 @@ class AppMain extends React.Component {
     this.showSamplesList = this.showSamplesList.bind(this);
     this.hideSamplesList = this.hideSamplesList.bind(this);
 
+    this.appReset = this.appReset.bind(this);
     this.save = this.save.bind(this);
+  }
+
+  appReset() {
+    if (this.state.playing) clearTimeout(this.state.timeout);
+    this.stopAllSources();
+    if (this.state.sampleSource !== null) {
+      this.state.sampleSource.stop(0);
+      this.state.sampleSource.disconnect();
+    }
+    this.disconnectAll();
+    this.state.master.gain.value = 1;
+
+    this.setState({
+      sourceList: [],
+      channels: [],
+      master: this.state.master,
+      showSamplesList: false,
+      channelNum: 0,
+      loading: false,
+      sampleSource: null,
+      playing: false,
+      recording: false,
+      bars: 4,
+      bpm: 85,
+      tc: 16,
+      loop: false,
+      loopTimes: 0,
+      loopCount: 0,
+      filetype: 'wav',
+    });
   }
 
   disconnectAll() {
     let channels = this.state.channels;
     for (let i=0; i<channels.length; ++i)
       channels[i].gainNode.disconnect();
-    let master = this.state.master;
-    master.disconnect();
   }
 
   addChannel(url) {
@@ -178,7 +207,7 @@ class AppMain extends React.Component {
   render() {
     return (
       <div>
-        <AppBar save={this.save} />
+        <AppBar new={this.appReset} save={this.save} />
         <div>
         <Grid>
           <Row>

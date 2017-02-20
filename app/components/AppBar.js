@@ -13,7 +13,7 @@ class AppBar extends React.Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <NavItem eventKey={1} href="#">New</NavItem>
+            <NavItem eventKey={1} href="#" onClick={this.props.new.bind(null)}>New</NavItem>
             <NavItem eventKey={2} href="#">Load</NavItem>
             <NavItem eventKey={3} href="#" onClick={this.props.save.bind(null)}>Save</NavItem>
             <NavDropdown eventKey={4} title="Dropdown" id="basic-nav-dropdown">
