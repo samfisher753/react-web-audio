@@ -64,9 +64,11 @@ class AudioEditor extends React.Component {
 
   addBeat(ch, id) {
     let channels = this.props.appState.channels;
-    let beats = channels[ch].beats;
+    let i = 0;
+    while (channels[i].id !== ch) ++i;
+    let beats = channels[i].beats;
     beats.push(id);
-    channels[ch].beats = beats;
+    channels[i].beats = beats;
 
     this.props.setAppState({
       channels: channels,
@@ -75,10 +77,12 @@ class AudioEditor extends React.Component {
 
   removeBeat(ch, id) {
     let channels = this.props.appState.channels;
-    let beats = channels[ch].beats;
+    let i = 0;
+    while (channels[i].id !== ch) ++i;
+    let beats = channels[i].beats;
     let index = beats.indexOf(id);
     beats.splice(index, 1);
-    channels[ch].beats = beats;
+    channels[i].beats = beats;
 
     this.props.setAppState({
       channels: channels,
@@ -88,7 +92,7 @@ class AudioEditor extends React.Component {
   play() {
     let appState = this.props.appState;
 
-    if (!appState.loading) {
+    if (!appState.loading && appState.channels.length > 0) {
       let sourceList = this.props.stopAllSources();
       this.props.setAppState({
         playing: true,
@@ -191,7 +195,7 @@ class AudioEditor extends React.Component {
 
   record() {
     let appState = this.props.appState;
-    if (!appState.recording && !appState.loading) {
+    if (!appState.recording && !appState.loading && appState.channels.length > 0) {
       let bars = appState.bars;
       let bpm = appState.bpm;
       let recorder = appState.recorder;
