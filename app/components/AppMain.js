@@ -50,6 +50,9 @@ class AppMain extends React.Component {
       loopTimes: 0, // 0 infinite
       loopCount: 1,
       filetype: 'wav',
+
+      startBar: 1,
+      endBar: 4,
     };
 
     this.addChannel = this.addChannel.bind(this);
@@ -93,6 +96,8 @@ class AppMain extends React.Component {
       loopTimes: 0,
       loopCount: 1,
       filetype: 'wav',
+      startBar: 1,
+      endBar: 4,
     });
   }
 
@@ -208,6 +213,8 @@ class AppMain extends React.Component {
       loopTimes: project.loopTimes,
       filetype: project.filetype,
       loading: true,
+      startBar: 1,
+      endBar: project.bars,
     });
 
     for (let i=0; i<channels.length; ++i) {

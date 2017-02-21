@@ -20,6 +20,8 @@ class AudioEditor extends React.Component {
     this.changeLoopTimes = this.changeLoopTimes.bind(this);
     this.changeFileType = this.changeFileType.bind(this);
     this.endPlayHandler = this.endPlayHandler.bind(this);
+    this.changeStartBar = this.changeStartBar.bind(this);
+    this.changeEndBar = this.changeEndBar.bind(this);
   }
 
   changeBars(e) {
@@ -107,7 +109,10 @@ class AudioEditor extends React.Component {
       let bars = appState.bars;
       let bpm = appState.bpm;
       let tc = appState.tc;
-      let noteTime = (60 / bpm) / (tc / 4);
+      let noteTime = 240 / (bpm * tc);
+
+      let startBeat = (appState.startBar - 1) * tc;
+      let endBeat = appState.endBar * tc;
 
       for (let i=0; i<channels.length; ++i) {
         let buffer = channels[i].buffer;
@@ -116,13 +121,16 @@ class AudioEditor extends React.Component {
         let chSourceList = [];
 
         for (let j=0; j<beats.length; ++j) {
-          let source = context.createBufferSource();
-          source.buffer = buffer;
-          source.connect(gainNode);
-          gainNode.connect(master);
-          let time = initTime + beats[j] * noteTime;
-          chSourceList.push(source);
-          source.start(time);
+          let beat = beats[j];
+          if (beat >= startBeat && beat < endBeat) {
+            let source = context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(gainNode);
+            gainNode.connect(master);
+            let time = initTime + ((beat - startBeat) * noteTime);
+            chSourceList.push(source);
+            source.start(time);
+          }
         }
 
         channels[i] = Object.assign({}, channels[i], { sourceList: chSourceList });
@@ -132,7 +140,7 @@ class AudioEditor extends React.Component {
         ];
       }
 
-      let duration = 240 / bpm * bars * 1000;
+      let duration = 240 / bpm * (appState.endBar - appState.startBar + 1) * 1000;
       let timeout = setTimeout(() => {
         this.endPlayHandler();
       }, duration);
@@ -201,7 +209,7 @@ class AudioEditor extends React.Component {
   record() {
     let appState = this.props.appState;
     if (!appState.recording && !appState.loading && appState.channels.length > 0) {
-      let bars = appState.bars;
+      let bars = appState.endBar - appState.startBar + 1;
       let bpm = appState.bpm;
       let recorder = appState.recorder;
       let duration = (( 240 * bars ) / bpm);
@@ -246,6 +254,20 @@ class AudioEditor extends React.Component {
     });
   }
 
+  changeStartBar(e) {
+    let newStartBar = parseInt(e.target.value);
+    this.props.setAppState({
+      startBar: newStartBar,
+    });
+  }
+
+  changeEndBar(e) {
+    let newEndBar = parseInt(e.target.value);
+    this.props.setAppState({
+      endBar: newEndBar,
+    });
+  }
+
   changeFileType(type) {
     let recorder = this.props.appState.recorder;
     if (!recorder.isRecording()) {
@@ -275,6 +297,10 @@ class AudioEditor extends React.Component {
             </select>
           Loop: <input type="checkbox" onChange={this.onChangeLoop} checked={appState.loop} style={{ marginRight: '10px' }} />
           Times: <input type='number' min='0' value={appState.loopTimes} onChange={this.changeLoopTimes} disabled={!appState.loop} style={{ width: '50px', textAlign: 'center' }} /> <small>(0 infinite)</small>
+        </h5>
+        <h5 style={{ marginLeft: '25px' }} >
+          Initial bar: <input type='number' min='1' max={appState.endBar} value={appState.startBar} onChange={this.changeStartBar} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} />
+          Ending bar: <input type='number' min={appState.startBar} max={appState.bars} value={appState.endBar} onChange={this.changeEndBar} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} />
         </h5>
         <BeatsGrid bars={appState.bars} tc={appState.tc} channels={appState.channels} addBeat={this.addBeat} removeBeat={this.removeBeat} />
         <Mixer channels={appState.channels} master={appState.master} deleteChannel={this.props.deleteChannel} setAppState={this.props.setAppState} />
