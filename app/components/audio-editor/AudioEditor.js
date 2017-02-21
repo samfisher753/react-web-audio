@@ -185,11 +185,13 @@ class AudioEditor extends React.Component {
   }
 
   stop() {
-    if (this.props.appState.playing && !this.props.appState.recording) {
+    if (this.props.appState.playing) {
+      if (this.props.appState.recorder.isRecording()) this.props.appState.recorder.cancelRecording();
       clearTimeout(this.props.appState.timeout);
       let sourceList = this.props.stopAllSources();
       this.props.setAppState({
         sourceList: sourceList,
+        recording: false,
         playing: false,
         loopCount: 1,
       });
