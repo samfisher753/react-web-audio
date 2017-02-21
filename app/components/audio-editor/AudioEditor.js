@@ -257,7 +257,7 @@ class AudioEditor extends React.Component {
           Bars: <input type='number' min='1' value={appState.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
           BPM: <input type='number' min='0' value={appState.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
           Time Correct: 
-            <select value={appState.tc} onChange={this.changeTC} ref="select" style={{ width: '50px', marginLeft: '5px', marginRight: '10px' }}>
+            <select value={appState.tc} onChange={this.changeTC} style={{ width: '50px', marginLeft: '5px', marginRight: '10px' }}>
               <option value="4">4</option>
               <option value="8">8</option>
               <option value="16">16</option>

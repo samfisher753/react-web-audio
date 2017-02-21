@@ -62,6 +62,7 @@ class AppMain extends React.Component {
     this.hideSamplesList = this.hideSamplesList.bind(this);
 
     this.appReset = this.appReset.bind(this);
+    this.load = this.load.bind(this);
     this.save = this.save.bind(this);
   }
 
@@ -175,6 +176,47 @@ class AppMain extends React.Component {
     });
   }
 
+  load(project) {
+    this.appReset();
+    let channels = [];
+    let context = this.state.context;
+    let master = this.state.master;
+    master.gain.value = project.masterGain;
+    for (let i=0; i<project.channels.length; ++i){
+      let pch = project.channels[i];
+      let gainNode = context.createGain();
+      gainNode.connect(master);
+      gainNode.gain.value = pch.gain;
+      channels.push({
+        id: pch.id,
+        gainNode: gainNode,
+        beats: pch.beats,
+        url: pch.url,
+        sourceList: [],
+      });
+    }
+
+    this.setState({
+      channels: channels,
+      master: master,
+      samples: project.samples,
+      channelNum: project.channelNum,
+      bars: project.bars,
+      bpm: project.bpm,
+      tc: project.tc,
+      loop: project.loop,
+      loopTimes: project.loopTimes,
+      filetype: project.filetype,
+      loading: true,
+    });
+
+    for (let i=0; i<channels.length; ++i) {
+      let ch = channels[i];
+      let myBufferLoader = new MyBufferLoader(context, ch.url, ch.id, this.bufferLoaded);
+      myBufferLoader.load();
+    }
+  }
+
   save() {
     let state = this.state;
     let channels = [];
@@ -207,7 +249,7 @@ class AppMain extends React.Component {
   render() {
     return (
       <div>
-        <AppBar new={this.appReset} save={this.save} />
+        <AppBar new={this.appReset} load={this.load} save={this.save} />
         <div>
         <Grid>
           <Row>
@@ -217,7 +259,7 @@ class AppMain extends React.Component {
           </Row>
         </Grid>
 
-        <button onClick={() => console.log(this.state)}>Show state</button>
+        { /* <button onClick={() => console.log(this.state)}>Show state</button> */ }
 
         <Modal show={this.state.showSamplesList} onHide={this.hideSamplesList}>
           <Modal.Header closeButton>
