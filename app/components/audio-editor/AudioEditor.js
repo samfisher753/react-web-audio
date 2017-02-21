@@ -185,12 +185,15 @@ class AudioEditor extends React.Component {
   }
 
   stop() {
-    if (this.props.appState.playing) clearTimeout(this.props.appState.timeout);
-    let sourceList = this.props.stopAllSources();
-    this.props.setAppState({
-      sourceList: sourceList,
-      playing: false,
-    });
+    if (this.props.appState.playing && !this.props.appState.recording) {
+      clearTimeout(this.props.appState.timeout);
+      let sourceList = this.props.stopAllSources();
+      this.props.setAppState({
+        sourceList: sourceList,
+        playing: false,
+        loopCount: 0,
+      });
+    }
   }
 
   record() {
@@ -256,8 +259,8 @@ class AudioEditor extends React.Component {
     let appState = this.props.appState;
     return(
       <Jumbotron style={{ padding: '10px 30px', paddingBottom: '30px' }}>
-        <h2>Audio Editor</h2>
-        <h5 style={{ marginTop: '20px' }} >
+        <h3>Audio Editor</h3>
+        <h5 style={{ marginTop: '20px', marginLeft: '25px' }} >
           Bars: <input type='number' min='1' value={appState.bars} onChange={this.changeBars} style={{ width: '50px', textAlign: 'center', marginRight: '10px' }} /> 
           BPM: <input type='number' min='0' value={appState.bpm} onChange={this.changeBPM} style={{ width: '60px', textAlign: 'center', marginRight: '10px' }} />
           Time Correct: 

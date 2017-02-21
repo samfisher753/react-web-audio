@@ -4,7 +4,7 @@ import BeatsGridItem from './BeatsGridItem';
 class BeatsGrid extends React.Component {
   render() {
     return(
-      <div style={{ marginTop: '20px', minHeight: '230px', overflow: 'auto', whiteSpace: 'nowrap' }}>
+      <div style={{ minHeight: '160px', overflow: 'auto', whiteSpace: 'nowrap' }}>
         <h4>Beats Grid</h4>
         <table>
           <tbody>
