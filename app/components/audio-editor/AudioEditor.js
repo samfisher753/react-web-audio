@@ -161,7 +161,7 @@ class AudioEditor extends React.Component {
         else {
           this.props.setAppState({
             playing: false,
-            loopCount: 0,
+            loopCount: 1,
           });
         }
       }
@@ -191,7 +191,7 @@ class AudioEditor extends React.Component {
       this.props.setAppState({
         sourceList: sourceList,
         playing: false,
-        loopCount: 0,
+        loopCount: 1,
       });
     }
   }
@@ -203,7 +203,7 @@ class AudioEditor extends React.Component {
       let bpm = appState.bpm;
       let recorder = appState.recorder;
       let duration = (( 240 * bars ) / bpm);
-      if (appState.loop && appState.loopTimes !== 0) duration = (( 240 * bars ) / bpm) * (appState.loopTimes + 1);
+      if (appState.loop && appState.loopTimes !== 0) duration = (( 240 * bars ) / bpm) * appState.loopTimes;
       let type = appState.filetype;
 
       recorder.setOptions({ timeLimit: duration });
@@ -228,7 +228,7 @@ class AudioEditor extends React.Component {
       this.props.setAppState({
         loop: e.target.checked,
         loopTimes: 0,
-        loopCount: 0,
+        loopCount: 1,
       });
     }
     else {

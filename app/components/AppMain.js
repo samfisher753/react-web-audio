@@ -48,7 +48,7 @@ class AppMain extends React.Component {
       tc: 16,
       loop: false,
       loopTimes: 0, // 0 infinite
-      loopCount: 0,
+      loopCount: 1,
       filetype: 'wav',
     };
 
@@ -91,7 +91,7 @@ class AppMain extends React.Component {
       tc: 16,
       loop: false,
       loopTimes: 0,
-      loopCount: 0,
+      loopCount: 1,
       filetype: 'wav',
     });
   }
