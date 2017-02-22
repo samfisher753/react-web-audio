@@ -32,10 +32,15 @@ class AudioEditor extends React.Component {
     if (newBars < oldBars) {
       let maxBeats = newBars * this.props.appState.tc;
       for (let i=0; i<channels.length; ++i) {
-        let beats = channels[i].beats;
-        for (let j=0; j<beats.length; ++j) {
-          if (beats[j] >= maxBeats) 
-            beats.splice(j--, 1);
+        let sources = channels[i].sources;
+        for (let j=0; j<sources.length; ++j) {
+          if (sources[j].id >= maxBeats) {
+            if (sources[j].source !== null) {
+              sources[j].source.stop(0);
+              sources[j].source.disconnect();
+            }
+            sources.splice(j--, 1);
+          }
         }
       }
     }
@@ -61,9 +66,10 @@ class AudioEditor extends React.Component {
 
   changeTC(e) {
     // Beats reset
+    this.props.stopAllSources();
     let channels = this.props.appState.channels;
     for (let i=0; i<channels.length; ++i)
-      channels[i].beats = [];
+      channels[i].sources = [];
 
     this.props.setAppState({
       channels: channels,
