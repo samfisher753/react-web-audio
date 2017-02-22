@@ -11,3 +11,5 @@ To use it:
 - Run "npm start".
 
 Now you can see the app at http://localhost:8089
+
+Or you can try it online now at https://react-sequencer.000webhostapp.com
