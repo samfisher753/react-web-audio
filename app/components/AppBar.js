@@ -45,7 +45,7 @@ class AppBar extends React.Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          <input type='file' ref='load' style={{ display: 'none' }} onChange={this.readFile} />
+          <input type='file' ref='load' style={{ display: 'none' }} onChange={this.readFile} accept='.json' />
           <Nav>
             <NavItem eventKey={1} href="#" onClick={this.props.new.bind(null)}>New</NavItem>
             <NavItem eventKey={2} href="#" onClick={this.showFileChooser}>Load</NavItem>
