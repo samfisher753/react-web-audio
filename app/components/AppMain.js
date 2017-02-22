@@ -282,7 +282,7 @@ class AppMain extends React.Component {
           </Row>
         </Grid>
 
-        <button onClick={() => console.log(this.state)}>Show state</button>
+        { /* <button onClick={() => console.log(this.state)}>Show state</button> */ }
 
         <Modal show={this.state.showSamplesList} onHide={this.hideSamplesList}>
           <Modal.Header closeButton>

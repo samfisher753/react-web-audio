@@ -164,9 +164,11 @@ class AudioEditor extends React.Component {
       if (appState.loopTimes !== 0) {
         // If remaining times
         if (appState.loopCount < appState.loopTimes) {
-          this.props.setAppState({
-            loopCount: ++appState.loopCount,
-          });
+          // Calling setState() generates a pop in the record.
+          // As we are not using loopCount in anything related to the UI 
+          // we don't need to update the UI when modifying it, 
+          // so we don't need to call setState().
+          ++this.props.appState.loopCount;
           this.play();
         }
         // If not remaining times
