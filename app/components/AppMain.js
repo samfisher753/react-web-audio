@@ -30,7 +30,6 @@ class AppMain extends React.Component {
 
     this.state = {
       context: context,
-      sourceList: [],
       channels: [],
       master: master,
       showSamplesList: false,
@@ -80,7 +79,6 @@ class AppMain extends React.Component {
     this.state.master.gain.value = 1;
 
     this.setState({
-      sourceList: [],
       channels: [],
       master: this.state.master,
       showSamplesList: false,
@@ -110,7 +108,7 @@ class AppMain extends React.Component {
   addChannel(url) {
     let context = this.state.context;
     let gainNode = context.createGain();
-    let master = context.master;
+    let master = this.state.master;
     let channelId = this.state.channelNum;
     gainNode.connect(master);
 
@@ -121,7 +119,7 @@ class AppMain extends React.Component {
         url: url,
         beats: [],
         gainNode: gainNode,
-        sourceList: [],
+        sources: [],
       }
     ];
 
@@ -161,15 +159,18 @@ class AppMain extends React.Component {
     });
   }
 
-  // Make sure to call setState after to update sourceList with returned value.
   stopAllSources() {
-    let sourceList = this.state.sourceList;
-    for (let i = 0; i < sourceList.length; ++i) {
-      sourceList[i].stop(0);
-      sourceList[i].disconnect();
+    let channels = this.state.channels;
+    for (let i=0; i<channels.length; ++i){
+      let sources = channels[i].sources;
+      for (let j=0; j<sources.length; ++j){
+        if (sources[j].source !== null){
+          sources[j].source.stop(0);
+          sources[j].source.disconnect();
+          sources[j].source = null;
+        }
+      }
     }
-    sourceList = [];
-    return sourceList;
   }
 
   showSamplesList() {
@@ -192,15 +193,20 @@ class AppMain extends React.Component {
     master.gain.value = project.masterGain;
     for (let i=0; i<project.channels.length; ++i){
       let pch = project.channels[i];
+      let sources = project.channels[i].sources;
+      let sourcesToLoad = [];
+      
+      for (let j=0; j<sources.length; ++j) 
+        sourcesToLoad.push({ id: sources[j].id, source: null, time: sources[j].time });
+
       let gainNode = context.createGain();
       gainNode.connect(master);
       gainNode.gain.value = pch.gain;
       channels.push({
         id: pch.id,
         gainNode: gainNode,
-        beats: pch.beats,
+        sources: sourcesToLoad,
         url: pch.url,
-        sourceList: [],
       });
     }
 
@@ -232,10 +238,17 @@ class AppMain extends React.Component {
     let channels = [];
 
     for (let i=0; i<state.channels.length; ++i) {
+      let sources = state.channels[i].sources;
+      let sourcesToSave = [];
+      for (let j=0; j<sources.length; ++j) {
+        let source = state.channels[i].sources[j];
+        sourcesToSave.push({ id: source.id, time: source.time });
+      }
+      
       channels.push({
         id: state.channels[i].id,
         url: state.channels[i].url,
-        beats: state.channels[i].beats,
+        sources: sourcesToSave,
         gain: state.channels[i].gainNode.gain.value,
       });
     }
@@ -269,14 +282,14 @@ class AppMain extends React.Component {
           </Row>
         </Grid>
 
-        { /* <button onClick={() => console.log(this.state)}>Show state</button> */ }
+        <button onClick={() => console.log(this.state)}>Show state</button>
 
         <Modal show={this.state.showSamplesList} onHide={this.hideSamplesList}>
           <Modal.Header closeButton>
             <Modal.Title>Select the samples you want or add new ones to the list</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} stopAllSources={this.stopAllSources} />
+            <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} />
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.hideSamplesList}>Close</Button>

@@ -72,12 +72,14 @@ class AudioEditor extends React.Component {
   }
 
   addBeat(ch, id) {
-    let channels = this.props.appState.channels;
+    let appState = this.props.appState;
+    let channels = appState.channels;
     let i = 0;
     while (channels[i].id !== ch) ++i;
-    let beats = channels[i].beats;
-    beats.push(id);
-    channels[i].beats = beats;
+
+    let noteTime = 240 / (appState.bpm * appState.tc);
+    let time = id * noteTime;
+    channels[i].sources.push({ id: id, source: null, time: time });
 
     this.props.setAppState({
       channels: channels,
@@ -88,10 +90,11 @@ class AudioEditor extends React.Component {
     let channels = this.props.appState.channels;
     let i = 0;
     while (channels[i].id !== ch) ++i;
-    let beats = channels[i].beats;
-    let index = beats.indexOf(id);
-    beats.splice(index, 1);
-    channels[i].beats = beats;
+
+    let j = 0;
+    while (channels[i].sources[j].id !== id) ++j;
+
+    channels[i].sources.splice(j, 1);
 
     this.props.setAppState({
       channels: channels,
@@ -110,39 +113,36 @@ class AudioEditor extends React.Component {
 
       let context = appState.context;
       let channels = appState.channels;
-      let master = appState.master;
 
       let initTime = context.currentTime;
-      let bars = appState.bars;
       let bpm = appState.bpm;
       let tc = appState.tc;
       let noteTime = 240 / (bpm * tc);
 
       let startBeat = (appState.startBar - 1) * tc;
       let endBeat = appState.endBar * tc;
-
-      let sourceList = [];
+      let startBeatTime = startBeat * noteTime;
 
       for (let i=0; i<channels.length; ++i) {
         let buffer = channels[i].buffer;
-        let beats = channels[i].beats;
+        let sources = channels[i].sources;
         let gainNode = channels[i].gainNode;
-        let chSourceList = [];
 
-        for (let j=0; j<beats.length; ++j) {
-          let beat = beats[j];
+        for (let j=0; j<sources.length; ++j) {
+          let beat = sources[j].id;
           if (beat >= startBeat && beat < endBeat) {
+            if (sources[j].source !== null) {
+              sources[j].source.stop(0);
+              sources[j].source.disconnect();
+            }
             let source = context.createBufferSource();
             source.buffer = buffer;
             source.connect(gainNode);
-            let time = initTime + ((beat - startBeat) * noteTime);
-            chSourceList.push(source);
-            sourceList.push(source);
+            let time = initTime + sources[j].time - startBeatTime;
+            sources[j].source = source;
             source.start(time);
           }
         }
-
-        channels[i].sourceList = chSourceList;
       }
 
       let duration = 240 / bpm * (appState.endBar - appState.startBar + 1) * 1000;
@@ -152,7 +152,6 @@ class AudioEditor extends React.Component {
 
       this.props.setAppState({
         channels: channels,
-        sourceList: sourceList,
         timeout: timeout,
       });
     }
@@ -160,7 +159,6 @@ class AudioEditor extends React.Component {
 
   endPlayHandler(){
     let appState = this.props.appState;
-    let sourceList = this.props.stopAllSources();
     if (appState.loop){
       // If finite loop
       if (appState.loopTimes !== 0) {
@@ -168,7 +166,6 @@ class AudioEditor extends React.Component {
         if (appState.loopCount < appState.loopTimes) {
           this.props.setAppState({
             loopCount: ++appState.loopCount,
-            sourceList: sourceList,
           });
           this.play();
         }
@@ -177,7 +174,6 @@ class AudioEditor extends React.Component {
           this.props.setAppState({
             playing: false,
             loopCount: 1,
-            sourceList: sourceList,
           });
         }
       }
@@ -187,14 +183,10 @@ class AudioEditor extends React.Component {
         if (appState.recording){
           this.props.setAppState({
             playing: false,
-            sourceList: sourceList,
           });
         }
         // If not recording
         else {
-          this.props.setAppState({
-            sourceList: sourceList,
-          });
           this.play();
         }
       }
@@ -202,7 +194,6 @@ class AudioEditor extends React.Component {
     else {
       this.props.setAppState({
         playing: false,
-        sourceList: sourceList,
       });
     }
   }
@@ -211,9 +202,8 @@ class AudioEditor extends React.Component {
     if (this.props.appState.playing) {
       if (this.props.appState.recorder.isRecording()) this.props.appState.recorder.cancelRecording();
       clearTimeout(this.props.appState.timeout);
-      let sourceList = this.props.stopAllSources();
+      this.props.stopAllSources();
       this.props.setAppState({
-        sourceList: sourceList,
         recording: false,
         playing: false,
         loopCount: 1,

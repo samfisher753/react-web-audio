@@ -15,13 +15,20 @@ class BeatsGridItem extends React.Component {
 
   buildRow(bars) {
     let tc = this.props.tc;
-    let beats = this.props.beats;
+    let sources = this.props.sources;
     let row = [];
     let id = 0;
     let key = 0;
     for (let i = 0; i < bars*(tc/4); ++i) {
       for (let j = 0; j < 4; ++j) {
-        let checked = beats.indexOf(id) != -1;
+        let checked = false;
+        for (let k=0; k<sources.length; ++k){
+          if (sources[k].id === id){
+            checked = true;
+            break;
+          }
+        }
+
         row.push(<input id={id++} type="checkbox" key={key++} onChange={this.onChange} checked={checked} />);
       }
       if (id%tc === 0) row.push(<span key={key++}>&nbsp;&nbsp;&nbsp;</span>);

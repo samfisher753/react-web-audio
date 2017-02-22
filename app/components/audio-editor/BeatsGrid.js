@@ -12,7 +12,7 @@ class BeatsGrid extends React.Component {
                 <tr><td><span style={{ marginLeft: '20px', fontStyle: 'italic' }}>- No sounds were added yet. Add some new sounds, use the "Add sounds" button below.</span></td></tr>
               :
               this.props.channels.map((ch) => 
-                <BeatsGridItem bars={this.props.bars} tc={this.props.tc} url={ch.url} id={ch.id} key={ch.id} beats={ch.beats} addBeat={this.props.addBeat} removeBeat={this.props.removeBeat} />
+                <BeatsGridItem bars={this.props.bars} tc={this.props.tc} url={ch.url} id={ch.id} key={ch.id} sources={ch.sources} addBeat={this.props.addBeat} removeBeat={this.props.removeBeat} />
               )
             }
           </tbody>

@@ -46,7 +46,6 @@ class SamplesList extends React.Component {
             setAppState={this.props.setAppState}
             addChannel={this.props.addChannel}
             deleteSample={this.deleteSample}
-            stopAllSources={this.props.stopAllSources}
           />
           )
         }
