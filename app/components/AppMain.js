@@ -222,8 +222,8 @@ class AppMain extends React.Component {
       loopTimes: project.loopTimes,
       filetype: project.filetype,
       loading: true,
-      startBar: 1,
-      endBar: project.bars,
+      startBar: project.startBar,
+      endBar: project.endBar,
     });
 
     for (let i=0; i<channels.length; ++i) {
@@ -264,6 +264,8 @@ class AppMain extends React.Component {
       loop: state.loop,
       loopTimes: state.loopTimes,
       filetype: state.filetype,
+      startBar: state.startBar,
+      endBar: state.endBar,
     };
 
     download(JSON.stringify(project, null, 2), 'MyProject.json');
