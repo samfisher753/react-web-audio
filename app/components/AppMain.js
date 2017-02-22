@@ -110,7 +110,10 @@ class AppMain extends React.Component {
   addChannel(url) {
     let context = this.state.context;
     let gainNode = context.createGain();
+    let master = context.master;
     let channelId = this.state.channelNum;
+    gainNode.connect(master);
+
     let channels = [
       ...this.state.channels,
       {
