@@ -83,9 +83,11 @@ class AudioEditor extends React.Component {
     let i = 0;
     while (channels[i].id !== ch) ++i;
 
-    let noteTime = 240 / (appState.bpm * appState.tc);
-    let time = id * noteTime;
-    channels[i].sources.push({ id: id, source: null, time: time });
+
+    let j = 0;
+    while (j < channels[i].sources.length && channels[i].sources[j].id < id) ++j;
+
+    channels[i].sources.splice(j, 0, { id: id, source: null });
 
     this.props.setAppState({
       channels: channels,
@@ -134,20 +136,17 @@ class AudioEditor extends React.Component {
         let sources = channels[i].sources;
         let gainNode = channels[i].gainNode;
 
-        for (let j=0; j<sources.length; ++j) {
-          let beat = sources[j].id;
-          if (beat >= startBeat && beat < endBeat) {
-            if (sources[j].source !== null) {
-              sources[j].source.stop(0);
-              sources[j].source.disconnect();
-            }
-            let source = context.createBufferSource();
-            source.buffer = buffer;
-            source.connect(gainNode);
-            let time = initTime + sources[j].time - startBeatTime;
-            sources[j].source = source;
-            source.start(time);
-          }
+        let j = 0;
+        while (j < sources.length && sources[j].id < startBeat) ++j;
+
+        while (j < sources.length && sources[j].id < endBeat) {
+          let source = context.createBufferSource();
+          source.buffer = buffer;
+          source.connect(gainNode);
+          let time = initTime + sources[j].id * noteTime - startBeatTime;
+          sources[j].source = source;
+          source.start(time);
+          ++j;
         }
       }
 
@@ -170,7 +169,6 @@ class AudioEditor extends React.Component {
       if (appState.loopTimes !== 0) {
         // If remaining times
         if (appState.loopCount < appState.loopTimes) {
-          // Calling setState() generates a pop in the record.
           // As we are not using loopCount in anything related to the UI 
           // we don't need to update the UI when modifying it, 
           // so we don't need to call setState().

@@ -196,8 +196,8 @@ class AppMain extends React.Component {
       let sources = project.channels[i].sources;
       let sourcesToLoad = [];
       
-      for (let j=0; j<sources.length; ++j) 
-        sourcesToLoad.push({ id: sources[j].id, source: null, time: sources[j].time });
+      for (let j=0; j<sources.length; ++j)
+        sourcesToLoad.push({ id: sources[j].id, source: null });
 
       let gainNode = context.createGain();
       gainNode.connect(master);
@@ -242,7 +242,7 @@ class AppMain extends React.Component {
       let sourcesToSave = [];
       for (let j=0; j<sources.length; ++j) {
         let source = state.channels[i].sources[j];
-        sourcesToSave.push({ id: source.id, time: source.time });
+        sourcesToSave.push({ id: source.id });
       }
       
       channels.push({
