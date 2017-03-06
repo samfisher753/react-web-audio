@@ -60,7 +60,7 @@ class AudioEditor extends React.Component {
 
   changeBPM(e) {
     this.props.setAppState({
-      bpm: parseInt(e.target.value),
+      bpm: parseFloat(e.target.value),
     });
   }
 
