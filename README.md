@@ -12,4 +12,6 @@ To use it:
 
 Now you can see the app at http://localhost:8089
 
-Or you can try it online now at https://react-sequencer.000webhostapp.com
+Or you can try it online now at http://react-sequencer.000webhostapp.com
+
+You will need to use the "Allow-Control-Allow-Origin: *" extension for Google Chrome in order to enable the browser to play the sounds(sorry, I'll work to avoid this). You can download it here: https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related

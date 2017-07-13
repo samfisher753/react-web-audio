@@ -1,5 +1,3 @@
-
-/*
 let samples = [
   'http://freewavesamples.com/files/Kick-Drum-16.wav',
   'http://freewavesamples.com/files/Dry-Kick.wav',
@@ -32,8 +30,8 @@ let samples = [
   'http://freewavesamples.com/files/Alesis-Fusion-Acoustic-Bass-C2.wav',
   'http://freewavesamples.com/files/Electro-Tom.wav',
 ];
-*/
 
+/*
 let samples = [
   // Kicks
   'https://dl.dropboxusercontent.com/u/76439474/samples/kick/Kick-Drum-16.wav',
@@ -70,5 +68,6 @@ let samples = [
   'https://dl.dropboxusercontent.com/u/76439474/samples/others/Electro-Tom.wav',
 
 ];
+*/
 
 export default samples;
