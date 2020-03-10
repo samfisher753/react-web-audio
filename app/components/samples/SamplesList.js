@@ -35,8 +35,8 @@ class SamplesList extends React.Component {
       <Jumbotron style={{ padding: '10px' }}>
         <h3 style={{ textAlign: 'center' }}>Samples List</h3>
         <div style={{ display: 'block' }}>
-          <b>Url:</b> <input ref='url' type='text'style={{ width: '430px', marginTop: '3px', marginRight: '10px', marginBottom: '20px' }}/>
-          <Button onClick={this.addSample} style={{ width: '70px', float: 'right', marginRight: '5px' }} >Add</Button>
+          <b>Url:</b> <input ref='url' type='text'style={{ width: '330px', marginTop: '3px', marginBottom: '20px' }}/>
+          <Button variant='secondary' onClick={this.addSample} style={{ width: '70px', float: 'right', marginRight: '5px' }} >Add</Button>
         </div>
         { this.props.appState.samples.map((url, key) => 
           <SampleItem

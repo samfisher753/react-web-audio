@@ -1,6 +1,6 @@
 import React from 'react';
 import AppBar from './AppBar'; 
-import { Grid, Row, Col, Jumbotron, Panel, Modal, Button } from 'react-bootstrap';
+import { Container, Row, Col, Modal, Button } from 'react-bootstrap';
 import SamplesList from './samples/SamplesList';
 import AudioEditor from './audio-editor/AudioEditor';
 import MyBufferLoader from '../web-audio-api/my-buffer-loader-es6';
@@ -276,13 +276,13 @@ class AppMain extends React.Component {
       <div>
         <AppBar new={this.appReset} load={this.load} save={this.save} />
         <div>
-        <Grid>
+        <Container>
           <Row>
             <Col>
               <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} showSamplesList={this.showSamplesList} deleteChannel={this.deleteChannel} />
             </Col>
           </Row>
-        </Grid>
+        </Container>
 
         { /* <button onClick={() => console.log(this.state)}>Show state</button> */ }
 
@@ -294,7 +294,7 @@ class AppMain extends React.Component {
             <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} />
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.hideSamplesList}>Close</Button>
+            <Button variant='secondary' onClick={this.hideSamplesList}>Close</Button>
           </Modal.Footer>
         </Modal>
         

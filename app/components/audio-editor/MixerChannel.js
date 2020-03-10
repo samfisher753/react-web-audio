@@ -39,7 +39,7 @@ class MixerChannel extends React.Component {
               <input onChange={this.onChange} type='range' min="0.000" max="1.000" step="0.001" value={this.props.gainNode.gain.value} style={{ marginTop: '10px', width: '30px', height: '165px', WebkitAppearance: 'slider-vertical' }} />
           }
         </center>
-        { this.props.id !== -1 && <center><Button style={{ marginTop: '13px' }} onClick={this.deleteChannel}>Delete</Button></center> }
+        { this.props.id !== -1 && <center><Button variant='secondary' style={{ marginTop: '3px' }} onClick={this.deleteChannel}>Delete</Button></center> }
       </div>
     );
   }

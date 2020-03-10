@@ -37,26 +37,18 @@ class AppBar extends React.Component {
 
   render() {
     return (
-      <Navbar inverse collapseOnSelect>
-        <Navbar.Header>
-          <Navbar.Brand>
-            <a href="#">React Sequencer</a>
-          </Navbar.Brand>
-          <Navbar.Toggle />
-        </Navbar.Header>
-        <Navbar.Collapse>
-          <input type='file' ref='load' style={{ display: 'none' }} onChange={this.readFile} accept='.json' />
-          <Nav>
-            <NavItem eventKey={1} href="#" onClick={this.props.new.bind(null)}>New</NavItem>
-            <NavItem eventKey={2} href="#" onClick={this.showFileChooser}>Load</NavItem>
-            <NavItem eventKey={3} href="#" onClick={this.props.save.bind(null)}>Save</NavItem>
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Navbar.Brand href="#">React Sequencer</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            <input type='file' ref='load' style={{ display: 'none' }} onChange={this.readFile} accept='.json' />
+            <NavDropdown title="File" id="basic-nav-dropdown">
+              <NavDropdown.Item onClick={this.props.new.bind(null)}>New</NavDropdown.Item>
+              <NavDropdown.Item onClick={this.showFileChooser}>Load</NavDropdown.Item>
+              <NavDropdown.Item onClick={this.props.save.bind(null)}>Save</NavDropdown.Item>
+            </NavDropdown>
           </Nav>
-          { /*
-          <Nav pullRight>
-            <NavItem eventKey={1} href="#">Link Right</NavItem>
-            <NavItem eventKey={2} href="#">Link Right</NavItem>
-          </Nav>
-          */ }
         </Navbar.Collapse>
       </Navbar>
     );
