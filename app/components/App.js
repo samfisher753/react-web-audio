@@ -14,6 +14,7 @@ class App extends React.Component {
       window.AudioContext || window.webKitAudioContext;
     let context = new AudioContext();
     let master = context.createGain();
+    master.gain.value = 0.5;
     master.connect(context.destination);
 
     let recorder = new WebAudioRecorder(master, {
@@ -76,7 +77,7 @@ class App extends React.Component {
       this.state.sampleSource.disconnect();
     }
     this.disconnectAll();
-    this.state.master.gain.value = 1;
+    this.state.master.gain.value = 0.5;
 
     this.setState({
       channels: [],
