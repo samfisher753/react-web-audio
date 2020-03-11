@@ -277,7 +277,7 @@ class App extends React.Component {
       <div>
         <AppBar new={this.appReset} load={this.load} save={this.save} />
 
-        <Container>
+        <Container style={{marginTop: '25px'}}>
           <Row>
             <Col>
               <AudioEditor appState={this.state} setAppState={this.setState} stopAllSources={this.stopAllSources} showSamplesList={this.showSamplesList} deleteChannel={this.deleteChannel} />
