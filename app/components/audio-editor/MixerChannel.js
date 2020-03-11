@@ -10,7 +10,6 @@ class MixerChannel extends React.Component {
   }
 
   onChange(e) {
-    console.log(e.target.value);
     let gainNode = this.props.gainNode;
     gainNode.gain.value = parseFloat(e.target.value);
     this.props.updateState(this.props.id);
