@@ -7,7 +7,7 @@ import MyBufferLoader from '../web-audio-api/my-buffer-loader-es6';
 
 import samples from './samples/data';
 
-class AppMain extends React.Component {
+class App extends React.Component {
   constructor() {
     super();
     window.AudioContext =
@@ -275,7 +275,7 @@ class AppMain extends React.Component {
     return (
       <div>
         <AppBar new={this.appReset} load={this.load} save={this.save} />
-        <div>
+
         <Container>
           <Row>
             <Col>
@@ -297,11 +297,9 @@ class AppMain extends React.Component {
             <Button variant='secondary' onClick={this.hideSamplesList}>Close</Button>
           </Modal.Footer>
         </Modal>
-        
-        </div>
       </div>
     );
   }
 }
 
-export default AppMain;
+export default App;

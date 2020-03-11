@@ -1,5 +1,7 @@
 import React from 'react';
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+
+import exampleProject from './samples/exampleProject';
 
 class AppBar extends React.Component {
   constructor(props){
@@ -7,6 +9,7 @@ class AppBar extends React.Component {
 
     this.showFileChooser = this.showFileChooser.bind(this);
     this.readFile = this.readFile.bind(this);
+    this.loadExampleProject = this.loadExampleProject.bind(this);
   }
 
   showFileChooser() {
@@ -35,6 +38,10 @@ class AppBar extends React.Component {
     }
   }
 
+  loadExampleProject(){
+    this.props.load(exampleProject);
+  }
+
   render() {
     return (
       <Navbar bg="dark" variant="dark" expand="lg">
@@ -48,6 +55,7 @@ class AppBar extends React.Component {
               <NavDropdown.Item onClick={this.showFileChooser}>Load</NavDropdown.Item>
               <NavDropdown.Item onClick={this.props.save.bind(null)}>Save</NavDropdown.Item>
             </NavDropdown>
+            <Nav.Link onClick={this.loadExampleProject}>Load example project</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

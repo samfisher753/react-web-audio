@@ -10,7 +10,6 @@
   "author": "Jose Ruiz",
   "license": "ISC",
   "dependencies": {
-    "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-bootstrap": "^1.0.0-beta.17",
     "react-dom": "^16.13.0"

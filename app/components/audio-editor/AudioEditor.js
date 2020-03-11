@@ -112,7 +112,7 @@ class AudioEditor extends React.Component {
   play() {
     let appState = this.props.appState;
 
-    if (!appState.loading && appState.channels.length > 0) {
+    if (!appState.playing && !appState.loading && appState.channels.length > 0) {
       if (!appState.playing) {
         this.props.setAppState({
           playing: true,
