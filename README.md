@@ -12,6 +12,6 @@ To use it:
 - Run "npm install".
 - Run "npm start".
 
-Now you can see the app at http://localhost:8089
+Now you can see the app at http://localhost:3000
 
 Or you can try it online now at http://react-sequencer-test.000webhostapp.com

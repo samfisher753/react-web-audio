@@ -17,7 +17,7 @@ class App extends React.Component {
     master.gain.value = 0.5;
     master.connect(context.destination);
 
-    let recorder = new WebAudioRecorder(master, {
+    let recorder = new window.WebAudioRecorder(master, {
       workerDir: '../lib/',     // must end with slash
       options: {
         ogg: {
@@ -269,7 +269,7 @@ class App extends React.Component {
       endBar: state.endBar,
     };
 
-    download(JSON.stringify(project, null, 2), 'MyProject.json');
+    window.download(JSON.stringify(project, null, 2), 'MyProject.json');
   }
 
   render() {

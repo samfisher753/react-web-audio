@@ -229,7 +229,7 @@ class AudioEditor extends React.Component {
 
       recorder.setOptions({ timeLimit: duration });
       recorder.onComplete = (rec, blob) => {
-        download(blob, 'mixdown.' + type);
+        window.download(blob, 'mixdown.' + type);
         this.props.setAppState({
           recording: false,
         });
