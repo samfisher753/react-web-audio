@@ -30,16 +30,16 @@ class App extends React.Component {
     });
 
     this.state = {
-      context: context,
+      context,
       channels: [],
-      master: master,
+      master,
       showSamplesList: false,
-      recorder: recorder,
+      recorder,
       channelNum: 0,
       loading: false,
       sampleSource: null,
 
-      samples: samples,
+      samples,
 
       playing: false,
       recording: false,
@@ -77,11 +77,12 @@ class App extends React.Component {
       this.state.sampleSource.disconnect();
     }
     this.disconnectAll();
-    this.state.master.gain.value = 0.5;
+    let master = this.state.master;
+    master.gain.value = 0.5;
 
     this.setState({
       channels: [],
-      master: this.state.master,
+      master,
       showSamplesList: false,
       channelNum: 0,
       loading: false,
@@ -112,6 +113,7 @@ class App extends React.Component {
     let master = this.state.master;
     let channelId = this.state.channelNum;
     gainNode.connect(master);
+    gainNode.gain.value = 0.5;
 
     let channels = [
       ...this.state.channels,
@@ -126,7 +128,7 @@ class App extends React.Component {
 
     this.setState({
       channels: channels,
-      channelNum: ++this.state.channelNum,
+      channelNum: this.state.channelNum + 1,
       loading: true,
     });
 
@@ -150,9 +152,12 @@ class App extends React.Component {
 
   bufferLoaded(channelId, buffer){
     let channels = this.state.channels;
-    for (let i=0; i<channels.length; ++i)
-      if (channels[i].id === channelId)
+    for (let i=0; i<channels.length; ++i){
+      if (channels[i].id === channelId){
         channels[i].buffer = buffer;
+        break;
+      }
+    }
       
     this.setState({
       channels: channels,
@@ -214,7 +219,6 @@ class App extends React.Component {
     this.setState({
       channels: channels,
       master: master,
-      samples: project.samples,
       channelNum: project.channelNum,
       bars: project.bars,
       bpm: project.bpm,
@@ -258,7 +262,6 @@ class App extends React.Component {
       channels: channels,
       masterGain: state.master.gain.value,
       channelNum: state.channelNum,
-      samples: state.samples,
       bars: state.bars,
       bpm: state.bpm,
       tc: state.tc,
@@ -289,7 +292,7 @@ class App extends React.Component {
 
         <Modal show={this.state.showSamplesList} onHide={this.hideSamplesList}>
           <Modal.Header closeButton>
-            <Modal.Title>Select the samples you want or add new ones to the list</Modal.Title>
+            <Modal.Title>Select the samples you want to use</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <SamplesList appState={this.state} setAppState={this.setState} addChannel={this.addChannel} />
