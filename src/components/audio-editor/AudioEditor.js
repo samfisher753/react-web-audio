@@ -113,51 +113,51 @@ class AudioEditor extends React.Component {
     let appState = this.props.appState;
 
     if (!appState.playing && !appState.loading && appState.channels.length > 0) {
-      if (!appState.playing) {
-        this.props.setAppState({
-          playing: true,
-        });
-      }
-
-      let context = appState.context;
-      let channels = appState.channels;
-
-      let initTime = context.currentTime;
-      let bpm = appState.bpm;
-      let tc = appState.tc;
-      let noteTime = 240 / (bpm * tc);
-
-      let startBeat = (appState.startBar - 1) * tc;
-      let endBeat = appState.endBar * tc;
-      let startBeatTime = startBeat * noteTime;
-
-      for (let i=0; i<channels.length; ++i) {
-        let buffer = channels[i].buffer;
-        let sources = channels[i].sources;
-        let gainNode = channels[i].gainNode;
-
-        let j = 0;
-        while (j < sources.length && sources[j].id < startBeat) ++j;
-
-        while (j < sources.length && sources[j].id < endBeat) {
-          let source = context.createBufferSource();
-          source.buffer = buffer;
-          source.connect(gainNode);
-          let time = initTime + sources[j].id * noteTime - startBeatTime;
-          sources[j].source = source;
-          source.start(time);
-          ++j;
-        }
-      }
-
-      let duration = 240 / bpm * (appState.endBar - appState.startBar + 1) * 1000;
-      let timeout = setTimeout(() => {
-        this.endPlayHandler();
-      }, duration);
-
       this.props.setAppState({
-        channels: channels,
-        timeout: timeout,
+        playing: true,
+      }, 
+      () => {
+        let context = appState.context;
+        let channels = appState.channels;
+
+        let initTime = context.currentTime;
+        let bpm = appState.bpm;
+        let tc = appState.tc;
+        let noteTime = 240 / (bpm * tc);
+
+        let startBeat = (appState.startBar - 1) * tc;
+        let endBeat = appState.endBar * tc;
+        let startBeatTime = startBeat * noteTime;
+
+        for (let i=0; i<channels.length; ++i) {
+          let buffer = channels[i].buffer;
+          let sources = channels[i].sources;
+          let gainNode = channels[i].gainNode;
+
+          let j = 0;
+          while (j < sources.length && sources[j].id < startBeat) ++j;
+
+          while (j < sources.length && sources[j].id < endBeat) {
+            let source = context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(gainNode);
+            let time = initTime + sources[j].id * noteTime - startBeatTime;
+            sources[j].source = source;
+            source.start(time);
+            ++j;
+          }
+        }
+
+        let duration = 240 / bpm * (appState.endBar - appState.startBar + 1) * 1000;
+        let timeout = setTimeout(() => {
+          this.endPlayHandler();
+        }, duration);
+
+        this.props.setAppState({
+          channels: channels,
+          timeout: timeout,
+        });
+
       });
     }
   }
@@ -169,11 +169,11 @@ class AudioEditor extends React.Component {
       if (appState.loopTimes !== 0) {
         // If remaining times
         if (appState.loopCount < appState.loopTimes) {
-          // As we are not using loopCount in anything related to the UI 
-          // we don't need to update the UI when modifying it, 
-          // so we don't need to call setState().
-          ++this.props.appState.loopCount;
-          this.play();
+          this.props.setAppState({
+            loopCount: this.props.appState.loopCount + 1,
+            playing: false
+          },
+          this.play);
         }
         // If not remaining times
         else {
@@ -193,7 +193,9 @@ class AudioEditor extends React.Component {
         }
         // If not recording
         else {
-          this.play();
+          this.props.setAppState({
+            playing: false,
+          }, this.play);
         }
       }
     }
@@ -237,10 +239,11 @@ class AudioEditor extends React.Component {
       
       this.props.setAppState({
         recording: true,
+      }, () => {
+        recorder.startRecording();
+        this.play();
       });
       
-      recorder.startRecording();
-      this.play();
     }
   }
 
