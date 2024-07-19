@@ -12,4 +12,4 @@ To use it:
 
 Now you can see the app at http://localhost:3000
 
-Or you can try it online now at https://react-web-audio.000webhostapp.com
+Or you can try it online now at https://samfisher753.github.io/react-web-audio
